@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_perfil"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.perfil.PerfilFragment"
+        android:label="@string/menu_perfil"
+        tools:layout="@layout/fragment_perfil" />
+
+    <fragment
+        android:id="@+id/nav_cambiar_password"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.perfil.CambiarPasswordFragment"
+        android:label="@string/menu_cambiar_password"
+        tools:layout="@layout/fragment_cambiar_password"
+        app:defaultNavHost="true"/>
+
+    <fragment
+        android:id="@+id/nav_deslogeo"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.deslogeo.SalirFragment"
+        android:label="@string/menu_deslogeo"
+        tools:layout="@layout/fragment_salir" />
+</navigation>
