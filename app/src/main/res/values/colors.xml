@@ -30,4 +30,28 @@
     <color name="colorError">#B00020</color>
     <color name="disabled_text_color">#9E9E9E</color>
     <color name="disabled_text_color2">#808080</color>
+    <!-- Opción 1: Paleta Profesional y Moderna -->
+    <color name="primary_color">#2C3E50</color>
+    <color name="secondary_color">#3498DB</color>
+    <color name="accent_color">#27AE60</color>
+    <color name="background_color">#FFFFFF</color>
+    <color name="text_color">#34495E</color>
+
+    <!-- Opción 2: Paleta Fresca y Saludable -->
+    <!--
+    <color name="primary_color">#2ECC71</color>
+    <color name="secondary_color">#1ABC9C</color>
+    <color name="accent_color">#E67E22</color>
+    <color name="background_color">#FFFFFF</color>
+    <color name="text_color">#2C3E50</color>
+    -->
+
+    <!-- Opción 3: Paleta Suave y Relajante -->
+    <!--
+    <color name="primary_color">#3498DB</color>
+    <color name="secondary_color">#9B59B6</color>
+    <color name="accent_color">#E91E63</color>
+    <color name="background_color">#FFFFFF</color>
+    <color name="text_color">#34495E</color>
+    -->
 </resources>

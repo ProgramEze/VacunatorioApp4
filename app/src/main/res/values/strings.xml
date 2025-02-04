@@ -24,6 +24,16 @@
     <string name="iniciar_sesion">Iniciar sesión</string>
     <string name="olvide_mi_contrasenia">Olvide mi contraseña</string>
     <string name="registrarse">Registrarse</string>
+    <!-- Strings related to registration -->
+    <string name="escanear_codigo">Escanear Código de Barras</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellido">Apellido</string>
+    <string name="dni">DNI</string>
+    <string name="telefono">Teléfono</string>
+    <string name="email">Email</string>
+    <string name="guardar">Guardar</string>
+    <string name="cancelar">Cancelar</string>
+    <!-- Strings related to navigation drawer -->
     <string name="menu_perfil">Mi perfil</string>
     <string name="menu_cambiar_password">Cambiar contraseña</string>
     <string name="menu_registro">Registro de personas</string>

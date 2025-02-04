@@ -21,8 +21,13 @@
         android:id="@+id/nav_cambiar_password"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.perfil.CambiarPasswordFragment"
         android:label="@string/menu_cambiar_password"
-        tools:layout="@layout/fragment_cambiar_password"
-        app:defaultNavHost="true"/>
+        tools:layout="@layout/fragment_cambiar_password" />
+
+    <fragment
+        android:id="@+id/nav_agregar_paciente"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.registro.AgregarPacienteFragment"
+        android:label="@string/menu_registro"
+        tools:layout="@layout/fragment_agregar_paciente" />
 
     <fragment
         android:id="@+id/nav_deslogeo"

@@ -18,6 +18,8 @@ barcodeScanning = "17.3.0"
 cameraCamera2 = "1.5.0-alpha05"
 cameraLifecycle = "1.5.0-alpha05"
 cameraView = "1.5.0-alpha05"
+cameraCore = "1.5.0-alpha05"
+activity = "1.8.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -38,6 +40,8 @@ barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", vers
 camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraCamera2" }
 camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraLifecycle" }
 camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "cameraCore" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

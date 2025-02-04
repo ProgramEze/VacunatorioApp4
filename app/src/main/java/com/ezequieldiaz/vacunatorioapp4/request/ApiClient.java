@@ -23,7 +23,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public class ApiClient {
-    public static final String URL = "http://192.168.1.10:5000/";
+    public static final String URL = "http://192.168.1.7:5000/";
     private static MisEndPoints mep;
 
     public static MisEndPoints getEndPoints(){
@@ -67,8 +67,16 @@ public class ApiClient {
         @GET("Tutores/{dni}")
         Call<Tutor> getTutor(@Header("Authorization") String token, @Path("dni") int id);
 
-        @POST("Tutores")
-        Call<Void> crearTutor(@Header("Authorization") String token, @Body Tutor tutor);
+        @FormUrlEncoded
+        @POST("tutores")  // Ruta del controlador en ASP.NET Core
+        Call<Void> registrarTutor(
+                @Header("Authorization") String token,
+                @Field("dni") String dni,
+                @Field("nombre") String nombre,
+                @Field("apellido") String apellido,
+                @Field("telefono") String telefono,
+                @Field("email") String email
+        );
     }
 
     public static void guardarToken(String token, Context context) {
