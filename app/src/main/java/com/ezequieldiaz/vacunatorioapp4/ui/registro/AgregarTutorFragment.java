@@ -2,28 +2,21 @@ package com.ezequieldiaz.vacunatorioapp4.ui.registro;
 
 import static android.app.Activity.RESULT_OK;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ezequieldiaz.vacunatorioapp4.R;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentAgregarPacienteBinding;
 
-public class AgregarPacienteFragment extends Fragment {
+public class AgregarTutorFragment extends Fragment {
 
-    private AgregarPacienteFragmentViewModel viewModel;
+    private AgregarTutorFragmentViewModel viewModel;
     private FragmentAgregarPacienteBinding binding; // Binding para el layout
     private static final int REQUEST_CODE_SCAN = 100;
 
@@ -34,7 +27,7 @@ public class AgregarPacienteFragment extends Fragment {
         View view = binding.getRoot();
 
         // Inicializar ViewModel
-        viewModel = new ViewModelProvider(this).get(AgregarPacienteFragmentViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AgregarTutorFragmentViewModel.class);
 
         // Configurar el clic del botón de escaneo
         binding.btnEscanear.setOnClickListener(v -> {

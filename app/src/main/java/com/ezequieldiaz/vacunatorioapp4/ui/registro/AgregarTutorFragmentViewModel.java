@@ -1,16 +1,12 @@
 package com.ezequieldiaz.vacunatorioapp4.ui.registro;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
@@ -19,11 +15,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AgregarPacienteFragmentViewModel extends AndroidViewModel {
+public class AgregarTutorFragmentViewModel extends AndroidViewModel {
 
     private MutableLiveData<String> resultadoGuardado = new MutableLiveData<>();
 
-    public AgregarPacienteFragmentViewModel(@NonNull Application application) {
+    public AgregarTutorFragmentViewModel(@NonNull Application application) {
         super(application);
     }
 
