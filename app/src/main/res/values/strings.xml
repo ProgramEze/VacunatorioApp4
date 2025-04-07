@@ -37,5 +37,7 @@
     <string name="menu_perfil">Mi perfil</string>
     <string name="menu_cambiar_password">Cambiar contraseña</string>
     <string name="menu_registro">Registro de personas</string>
+    <string name="menu_cita">Citas</string>
+    <string name="menu_aplicacion">Aplicaciones</string>
     <string name="menu_deslogeo">Desloguearse</string>
 </resources>

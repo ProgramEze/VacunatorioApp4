@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_perfil, R.id.nav_cambiar_password, R.id.nav_agregar_paciente, R.id.nav_deslogeo)
+                R.id.nav_home, R.id.nav_perfil, R.id.nav_cambiar_password, R.id.nav_agregar_paciente, R.id.nav_cita, R.id.nav_aplicacion, R.id.nav_deslogeo)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -53,6 +53,16 @@ public class MainActivity extends AppCompatActivity {
         TextView navHeaderSubtitle = headerView.findViewById(R.id.nav_header_subtitle);
         navHeaderTitle.setText(nombre);
         navHeaderSubtitle.setText(email);
+    }
+
+    @Override
+    public void onBackPressed() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        if (navController.getCurrentDestination().getId() != R.id.nav_home) {
+            navController.navigateUp();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

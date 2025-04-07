@@ -9,29 +9,90 @@
         android:id="@+id/nav_home"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_perfil"
+            app:destination="@id/nav_perfil" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_cambiar_password"
+            app:destination="@id/nav_cambiar_password" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_agregar_paciente"
+            app:destination="@id/nav_agregar_paciente" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_cita"
+            app:destination="@id/nav_cita" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_aplicacion"
+            app:destination="@id/nav_aplicacion" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_deslogeo"
+            app:destination="@id/nav_deslogeo" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_perfil"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.perfil.PerfilFragment"
         android:label="@string/menu_perfil"
-        tools:layout="@layout/fragment_perfil" />
+        tools:layout="@layout/fragment_perfil">
+    <action
+        android:id="@+id/action_nav_perfil_to_nav_home"
+        app:destination="@id/nav_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_cambiar_password"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.perfil.CambiarPasswordFragment"
         android:label="@string/menu_cambiar_password"
-        tools:layout="@layout/fragment_cambiar_password" />
+        tools:layout="@layout/fragment_cambiar_password">
+        <action
+            android:id="@+id/action_nav_cambiar_password_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_agregar_paciente"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.registro.AgregarTutorFragment"
         android:label="@string/menu_registro"
-        tools:layout="@layout/fragment_agregar_paciente" />
+        tools:layout="@layout/fragment_agregar_paciente">
+        <action
+            android:id="@+id/action_nav_agregar_paciente_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_cita"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.cita.CitaFragment"
+        android:label="@string/menu_cita"
+        tools:layout="@layout/fragment_cita">
+        <action
+            android:id="@+id/action_nav_cita_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_aplicacion"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.aplicacion.AplicacionFragment"
+        android:label="@string/menu_aplicacion"
+        tools:layout="@layout/fragment_aplicacion">
+        <action
+            android:id="@+id/action_nav_aplicacion_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_deslogeo"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.deslogeo.SalirFragment"
         android:label="@string/menu_deslogeo"
-        tools:layout="@layout/fragment_salir" />
+        tools:layout="@layout/fragment_salir">
+        <action
+            android:id="@+id/action_nav_deslogeo_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 </navigation>
