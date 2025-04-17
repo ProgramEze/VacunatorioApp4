@@ -27,9 +27,9 @@ public class AgregarTutorFragmentViewModel extends AndroidViewModel {
         return resultadoGuardado;
     }
 
-    public void guardarPaciente(String nombre, String apellido, String dni, String telefono, String email) {
-        // Crear un objeto Tutor (suponiendo que el paciente es un tutor)
-        Tutor tutor = new Tutor();
+    public void guardarTutor(String nombre, String apellido, String dni, String telefono, String email) {
+        // Crear un objeto Tutor
+        Tutor tutor = new Tutor(); // Asumo constructor vacío o setters disponibles
         tutor.setNombre(nombre);
         tutor.setApellido(apellido);
         tutor.setDni(dni);
@@ -41,23 +41,34 @@ public class AgregarTutorFragmentViewModel extends AndroidViewModel {
 
         // Llamar a la API para guardar el tutor
         ApiClient.MisEndPoints api = ApiClient.getEndPoints();
-        Call<Void> call = api.registrarTutor(token, dni, nombre, apellido, telefono, email);
+        Call<Void> call = api.registrarTutor(token, dni, nombre, apellido, telefono, email); // Ajusta parámetros si es necesario
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    resultadoGuardado.setValue("Paciente/Tutor guardado correctamente");
+                    resultadoGuardado.setValue("Tutor guardado correctamente");
                 } else {
-                    Log.d("salida", "Error al guardar el paciente/tutor");
-                    Log.d("salida", "Código de estado: " + response.code());
-                    Log.d("salida", "Mensaje de error: " + response.message());
-                    resultadoGuardado.setValue("Error al guardar el paciente/tutor");
+                    //  Captura y muestra el error
+                    int errorCode = response.code();
+                    String errorBody = null;
+                    try {
+                        errorBody = response.errorBody().string();
+                    } catch (Exception e) {
+                        Log.e("API_ERROR", "Error al leer el cuerpo del error", e);
+                    }
+                    if (errorCode == 400 && errorBody != null) {
+                        resultadoGuardado.setValue(errorBody);
+                    } else {
+                        resultadoGuardado.setValue("Error al guardar el tutor: " + errorCode + " - " + response.message());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                resultadoGuardado.setValue("Error de conexión: " + t.getMessage());
+                String errorMessage = "Error de conexión: " + t.getMessage();
+                Log.e("API_ERROR", errorMessage, t);
+                resultadoGuardado.setValue(errorMessage);
             }
         });
     }

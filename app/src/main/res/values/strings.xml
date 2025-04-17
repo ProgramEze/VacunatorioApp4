@@ -30,14 +30,24 @@
     <string name="apellido">Apellido</string>
     <string name="dni">DNI</string>
     <string name="telefono">Teléfono</string>
+    <string name="fecha_de_nacimiento">Fecha de Nacimiento</string>
+    <string name="genero">Género</string>
     <string name="email">Email</string>
     <string name="guardar">Guardar</string>
     <string name="cancelar">Cancelar</string>
     <!-- Strings related to navigation drawer -->
     <string name="menu_perfil">Mi perfil</string>
     <string name="menu_cambiar_password">Cambiar contraseña</string>
-    <string name="menu_registro">Registro de personas</string>
+    <string name="menu_paciente">Registrar pacientes</string>
+    <string name="menu_tutor">Registrar tutores</string>
     <string name="menu_cita">Citas</string>
     <string name="menu_aplicacion">Aplicaciones</string>
     <string name="menu_deslogeo">Desloguearse</string>
+    <string-array name="genero_array">
+        <item>Seleccione el género del paciente</item>
+        <item>Masculino</item>
+        <item>Femenino</item>
+        <item>Otro</item>
+    </string-array>
+
 </resources>

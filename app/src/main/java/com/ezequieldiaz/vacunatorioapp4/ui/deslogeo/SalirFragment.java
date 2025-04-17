@@ -15,7 +15,7 @@ public class SalirFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSalirBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        SalirDialogo.mostrarDialogo(getContext());
+        SalirDialogo.mostrarDialogo(getContext(), root);
         return root;
     }
     @Override

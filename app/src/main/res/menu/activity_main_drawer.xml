@@ -15,7 +15,11 @@
         <item
             android:id="@+id/nav_agregar_paciente"
             android:icon="@drawable/icon_registro"
-            android:title="@string/menu_registro" />
+            android:title="@string/menu_paciente" />
+        <item
+            android:id="@+id/nav_agregar_tutor"
+            android:icon="@drawable/icon_registro"
+            android:title="@string/menu_tutor" />
         <item
             android:id="@+id/nav_deslogeo"
             android:icon="@drawable/icon_logout"

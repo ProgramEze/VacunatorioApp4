@@ -25,10 +25,17 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
-        binding.btnRegistrar.setOnClickListener(new View.OnClickListener() {
+        binding.btnRegistrarPaciente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewModel.irAFragment(new HomeFragmentViewModel.Navegacion(R.id.nav_agregar_paciente, null));
+            }
+        });
+
+        binding.btnRegistrarTutor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.irAFragment(new HomeFragmentViewModel.Navegacion(R.id.nav_agregar_tutor, null));
             }
         });
 

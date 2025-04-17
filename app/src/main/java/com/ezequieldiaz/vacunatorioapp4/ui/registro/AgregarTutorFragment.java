@@ -12,18 +12,18 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentAgregarPacienteBinding;
+import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentAgregarTutorBinding;
 
 public class AgregarTutorFragment extends Fragment {
 
     private AgregarTutorFragmentViewModel viewModel;
-    private FragmentAgregarPacienteBinding binding; // Binding para el layout
+    private FragmentAgregarTutorBinding binding; // Binding para el layout
     private static final int REQUEST_CODE_SCAN = 100;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflar el layout usando View Binding
-        binding = FragmentAgregarPacienteBinding.inflate(inflater, container, false);
+        binding = FragmentAgregarTutorBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         // Inicializar ViewModel
@@ -51,8 +51,8 @@ public class AgregarTutorFragment extends Fragment {
                 return;
             }
 
-            // Llamar al ViewModel para guardar el paciente
-            viewModel.guardarPaciente(nombre, apellido, dni, telefono, email);
+            // Llamar al ViewModel para guardar el Tutor
+            viewModel.guardarTutor(nombre, apellido, dni, telefono, email);
         });
 
         // Configurar el clic del botón de cancelar
@@ -65,7 +65,7 @@ public class AgregarTutorFragment extends Fragment {
         viewModel.getResultadoGuardado().observe(getViewLifecycleOwner(), resultado -> {
             if (resultado != null) {
                 Toast.makeText(getContext(), resultado, Toast.LENGTH_SHORT).show();
-                if (resultado.equals("Paciente/Tutor guardado correctamente")) {
+                if (resultado.equals("Tutor guardado correctamente")) {
                     requireActivity().getSupportFragmentManager().popBackStack(); // Cerrar el fragmento después de guardar
                 }
             }

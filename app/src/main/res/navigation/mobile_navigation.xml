@@ -58,11 +58,21 @@
 
     <fragment
         android:id="@+id/nav_agregar_paciente"
-        android:name="com.ezequieldiaz.vacunatorioapp4.ui.registro.AgregarTutorFragment"
-        android:label="@string/menu_registro"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.registro.AgregarPacienteFragment"
+        android:label="@string/menu_paciente"
         tools:layout="@layout/fragment_agregar_paciente">
         <action
             android:id="@+id/action_nav_agregar_paciente_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_agregar_tutor"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.registro.AgregarTutorFragment"
+        android:label="@string/menu_tutor"
+        tools:layout="@layout/fragment_agregar_tutor">
+        <action
+            android:id="@+id/action_nav_agregar_tutor_to_nav_home"
             app:destination="@id/nav_home" />
     </fragment>
 

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <!-- Botón para escanear código de barras -->
+    <Button
+        android:id="@+id/btnEscanear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/escanear_codigo"
+        android:backgroundTint="@color/primary_color"
+        android:textColor="@color/white"
+        android:drawableStart="@drawable/ic_barcode_scanner" /> <!-- Icono de código de barras -->
+
+    <!-- Campos para mostrar los datos escaneados -->
+    <EditText
+        android:id="@+id/etNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnEscanear"
+        android:layout_marginTop="16dp"
+        android:hint="@string/nombre"
+        android:inputType="text"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background" />
+
+    <EditText
+        android:id="@+id/etApellido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etNombre"
+        android:layout_marginTop="16dp"
+        android:hint="@string/apellido"
+        android:inputType="text"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background" />
+
+    <EditText
+        android:id="@+id/etDNI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etApellido"
+        android:layout_marginTop="16dp"
+        android:hint="@string/dni"
+        android:inputType="number"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background" />
+
+    <EditText
+        android:id="@+id/etTelefono"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etDNI"
+        android:layout_marginTop="16dp"
+        android:hint="@string/telefono"
+        android:inputType="number"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etTelefono"
+        android:layout_marginTop="16dp"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background" />
+
+    <!-- Botones para guardar o cancelar -->
+    <Button
+        android:id="@+id/btnGuardar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etEmail"
+        android:layout_marginTop="24dp"
+        android:text="@string/guardar"
+        android:backgroundTint="@color/primary_color"
+        android:textColor="@color/white"
+        android:drawableStart="@drawable/ic_add" /> <!-- Icono de guardar -->
+
+    <Button
+        android:id="@+id/btnCancelar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnGuardar"
+        android:layout_marginTop="16dp"
+        android:text="@string/cancelar"
+        android:backgroundTint="@color/secondary_color"
+        android:textColor="@color/white"
+        android:drawableStart="@drawable/ic_cancel" /> <!-- Icono de cancelar -->
+
+</RelativeLayout>

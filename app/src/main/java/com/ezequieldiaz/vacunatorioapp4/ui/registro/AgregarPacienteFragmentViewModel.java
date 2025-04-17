@@ -1,0 +1,60 @@
+package com.ezequieldiaz.vacunatorioapp4.ui.registro;
+
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.ezequieldiaz.vacunatorioapp4.model.Genero;
+import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
+import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
+
+import java.time.LocalDate;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AgregarPacienteFragmentViewModel extends AndroidViewModel {
+
+    private MutableLiveData<String> resultado = new MutableLiveData<>();
+
+    public AgregarPacienteFragmentViewModel(@NonNull Application application) {
+        super(application);
+    }
+
+    public LiveData<String> getResultado() {
+        return resultado;
+    }
+
+    public void guardarPaciente(String nombre, String apellido, String dni, LocalDate fechaNacimiento, Genero genero) {
+        Paciente paciente = new Paciente(); // Asegurate de tener setters
+        paciente.setNombre(nombre);
+        paciente.setApellido(apellido);
+        paciente.setDni(dni);
+        paciente.setFechaDeNacimiento(fechaNacimiento);
+        paciente.setGenero(genero);
+
+        String token = ApiClient.leerToken(getApplication());
+
+        ApiClient.MisEndPoints api = ApiClient.getEndPoints();
+        Call<Void> call = api.registrarPaciente(token, dni, nombre, apellido, fechaNacimiento, genero);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    resultado.setValue("Paciente guardado correctamente");
+                } else {
+                    resultado.setValue("Error al guardar paciente: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                resultado.setValue("Error de conexión: " + t.getMessage());
+            }
+        });
+    }
+}

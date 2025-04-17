@@ -1,14 +1,17 @@
 package com.ezequieldiaz.vacunatorioapp4.request;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ezequieldiaz.vacunatorioapp4.model.Agente;
 import com.ezequieldiaz.vacunatorioapp4.model.Aplicacion;
+import com.ezequieldiaz.vacunatorioapp4.model.Genero;
 import com.ezequieldiaz.vacunatorioapp4.model.Laboratorio;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import retrofit2.Call;
@@ -24,7 +27,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public class ApiClient {
-    public static final String URL = "http://192.168.1.6:5000/";
+    public static final String URL = "http://192.168.0.107:5000/";
     private static MisEndPoints mep;
 
     public static MisEndPoints getEndPoints(){
@@ -91,6 +94,17 @@ public class ApiClient {
                 @Field("apellido") String apellido,
                 @Field("telefono") String telefono,
                 @Field("email") String email
+        );
+
+        @FormUrlEncoded
+        @POST("pacientes")  // Ruta del controlador en ASP.NET Core
+        Call<Void> registrarPaciente(
+                @Header("Authorization") String token,
+                @Field("dni") String dni,
+                @Field("nombre") String nombre,
+                @Field("apellido") String apellido,
+                @Field("fechaNacimiento") LocalDate fechaNacimiento,
+                @Field("genero") Genero genero
         );
     }
 

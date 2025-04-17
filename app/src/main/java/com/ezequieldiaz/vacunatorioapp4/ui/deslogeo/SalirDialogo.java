@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.ezequieldiaz.vacunatorioapp4.LoginActivity;
 import com.ezequieldiaz.vacunatorioapp4.MainActivity;
+import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
 
 public class SalirDialogo extends AndroidViewModel {
@@ -19,7 +21,7 @@ public class SalirDialogo extends AndroidViewModel {
         super(application);
     }
 
-    public static void mostrarDialogo(Context context) {
+    public static void mostrarDialogo(Context context, View root) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Confirmar salida");
         builder.setMessage("¿Está seguro que desea salir?");
@@ -48,6 +50,14 @@ public class SalirDialogo extends AndroidViewModel {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                // Navegar al HomeFragment
+                androidx.navigation.Navigation.findNavController(root).navigate(
+                        R.id.action_nav_deslogeo_to_nav_home,
+                        null,
+                        new androidx.navigation.NavOptions.Builder()
+                                .setPopUpTo(R.id.nav_home, true)
+                                .build()
+                );
             }
         });
         builder.show();
