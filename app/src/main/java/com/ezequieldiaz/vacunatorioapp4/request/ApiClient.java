@@ -27,7 +27,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public class ApiClient {
-    public static final String URL = "http://192.168.0.107:5000/";
+    public static final String URL = "http://192.168.1.13:5000/";
     private static MisEndPoints mep;
 
     public static MisEndPoints getEndPoints(){

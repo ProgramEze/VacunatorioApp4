@@ -49,8 +49,7 @@ public class AgregarPacienteFragment extends Fragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 fechaNacimiento = LocalDate.parse(binding.etFechaDeNacimiento.getText().toString(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
             }
-            Genero genero = Genero.valueOf(binding.spinnerGenero.getSelectedItem().toString());
-
+            Genero genero = Genero.valueOf(binding.spinnerGenero.getSelectedItem().toString().toUpperCase());
             if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || fechaNacimiento == null
                     || genero.equals("Seleccione el género del paciente")) {
                 Toast.makeText(getContext(), "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show();

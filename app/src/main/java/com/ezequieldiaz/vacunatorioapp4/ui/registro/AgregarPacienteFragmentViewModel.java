@@ -1,6 +1,7 @@
 package com.ezequieldiaz.vacunatorioapp4.ui.registro;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -47,12 +48,25 @@ public class AgregarPacienteFragmentViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     resultado.setValue("Paciente guardado correctamente");
                 } else {
-                    resultado.setValue("Error al guardar paciente: " + response.message());
+                    //  Captura y muestra el error
+                    int errorCode = response.code();
+                    String errorBody = null;
+                    try {
+                        errorBody = response.errorBody().string();
+                    } catch (Exception e) {
+                        Log.e("API_ERROR", "Error al leer el cuerpo del error", e);
+                    }
+                    if (errorCode == 400 && errorBody != null) {
+                        resultado.setValue(errorBody);
+                    } else {
+                        resultado.setValue("Error al guardar el tutor: " + errorCode + " - " + response.message());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("API_ERROR", "Error al guardar paciente: " + t.getMessage());
                 resultado.setValue("Error de conexión: " + t.getMessage());
             }
         });
