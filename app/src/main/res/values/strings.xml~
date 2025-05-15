@@ -43,7 +43,7 @@
     <string name="menu_cambiar_password">Cambiar contraseña</string>
     <string name="menu_paciente">Registrar pacientes</string>
     <string name="menu_tutor">Registrar tutores</string>
-    <string name="menu_turno">Registrar turnos</string>
+    <string name="menu_turno">Registrar citas</string>
     <string name="menu_aplicacion">Aplicaciones</string>
     <string name="menu_deslogeo">Desloguearse</string>
     <string-array name="genero_array">

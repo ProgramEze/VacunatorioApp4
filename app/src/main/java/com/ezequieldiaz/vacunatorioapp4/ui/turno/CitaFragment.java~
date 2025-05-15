@@ -1,0 +1,219 @@
+package com.ezequieldiaz.vacunatorioapp4.ui.cita;
+
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.os.Build;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.ezequieldiaz.vacunatorioapp4.R; // Asegúrate que R esté bien importado
+import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentCitaBinding; // Generado por ViewBinding
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
+public class CitaFragment extends Fragment {
+
+    private FragmentCitaBinding binding; // View Binding
+    private CitaFragmentViewModel viewModel;
+
+    private LocalDate selectedDate;
+    private LocalTime selectedTime;
+    private ArrayAdapter<String> tipoVacunaAdapter;
+    private ArrayAdapter<String> relacionTutorAdapter;
+
+    // Formateadores para mostrar fecha y hora en los EditText
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault());
+
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = FragmentCitaBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(CitaFragmentViewModel.class);
+
+        setupSpinners();
+        setupDateTimePickers();
+        setupObservers();
+        setupClickListeners();
+
+        viewModel.cargarDatosIniciales();
+    }
+
+    private void setupSpinners() {
+        // Adapter para Tipo de Vacuna (se llenará desde el ViewModel)
+        tipoVacunaAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, new ArrayList<>());
+        binding.spinnerTipoVacuna.setAdapter(tipoVacunaAdapter);
+
+        // Adapter para Relación con Tutor (datos locales)
+        // Considera mover esto a R.array.relaciones_tutor en strings.xml
+        String[] relaciones = {"Padre", "Madre", "Tutor Legal", "Hermano/a Mayor", "Otro"};
+        relacionTutorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, relaciones);
+        binding.spinnerRelacionTutor.setAdapter(relacionTutorAdapter);
+    }
+
+    private void setupDateTimePickers() {
+        binding.editTextFechaCita.setOnClickListener(v -> showDatePickerDialog());
+        binding.editTextHoraCita.setOnClickListener(v -> showTimePickerDialog());
+    }
+
+    private void showDatePickerDialog() {
+        final Calendar c = Calendar.getInstance();
+        if (selectedDate != null) {
+            c.set(selectedDate.getYear(), selectedDate.getMonthValue() - 1, selectedDate.getDayOfMonth());
+        }
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    selectedDate = LocalDate.of(year1, monthOfYear + 1, dayOfMonth);
+                    binding.editTextFechaCita.setText(selectedDate.format(dateFormatter));
+                    binding.textInputLayoutFechaCita.setError(null); // Limpiar error al seleccionar
+                }, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000); // Opcional: no permitir fechas pasadas
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog() {
+        final Calendar c = Calendar.getInstance();
+        if (selectedTime != null) {
+            c.set(Calendar.HOUR_OF_DAY, selectedTime.getHour());
+            c.set(Calendar.MINUTE, selectedTime.getMinute());
+        } else {
+            // Default a una hora común si no hay nada seleccionado, ej. 8 AM
+            c.set(Calendar.HOUR_OF_DAY, 8);
+            c.set(Calendar.MINUTE, 0);
+        }
+
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(),
+                (view, hourOfDay, minute1) -> {
+                    selectedTime = LocalTime.of(hourOfDay, minute1);
+                    binding.editTextHoraCita.setText(selectedTime.format(timeFormatter));
+                    binding.textInputLayoutHoraCita.setError(null); // Limpiar error al seleccionar
+                }, hour, minute, true); // true para formato 24 horas
+        timePickerDialog.show();
+    }
+
+
+    private void setupObservers() {
+        viewModel.getMTiposVacunaNombres().observe(getViewLifecycleOwner(), tipos -> {
+            if (tipos != null) {
+                tipoVacunaAdapter.clear();
+                tipoVacunaAdapter.addAll(tipos);
+                tipoVacunaAdapter.notifyDataSetChanged();
+            }
+        });
+
+        viewModel.getMMensaje().observe(getViewLifecycleOwner(), mensaje -> {
+            if (mensaje != null && !mensaje.isEmpty()) {
+                Toast.makeText(getContext(), mensaje, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        viewModel.getMCitaGuardada().observe(getViewLifecycleOwner(), guardada -> {
+            if (guardada != null && guardada) {
+                Toast.makeText(getContext(), "Cita guardada con éxito", Toast.LENGTH_SHORT).show();
+                limpiarCampos();
+            }
+        });
+
+        // Observadores de errores
+        viewModel.getMErrorPacienteDni().observe(getViewLifecycleOwner(), error ->
+                binding.textInputLayoutPacienteDni.setError(error)
+        );
+        viewModel.getMErrorTutorDni().observe(getViewLifecycleOwner(), error ->
+                binding.textInputLayoutTutorDni.setError(error)
+        );
+        viewModel.getMErrorTipoVacuna().observe(getViewLifecycleOwner(), error ->
+                binding.textInputLayoutTipoVacuna.setError(error) // El error se mostrará en el TextInputLayout
+        );
+        viewModel.getMErrorRelacionTutor().observe(getViewLifecycleOwner(), error ->
+                binding.textInputLayoutRelacionTutor.setError(error)
+        );
+        viewModel.getMErrorFecha().observe(getViewLifecycleOwner(), error ->
+                binding.textInputLayoutFechaCita.setError(error)
+        );
+        viewModel.getMErrorHora().observe(getViewLifecycleOwner(), error ->
+                binding.textInputLayoutHoraCita.setError(error)
+        );
+    }
+
+    private void setupClickListeners() {
+        binding.buttonGuardarCita.setOnClickListener(v -> {
+            String pacienteDni = binding.editTextPacienteDni.getText().toString().trim();
+            String tipoVacuna = binding.spinnerTipoVacuna.toString().trim(); // AutoCompleteTextView obtiene texto
+            String tutorDni = binding.editTextTutorDni.getText().toString().trim();
+            String relacionTutor = binding.spinnerRelacionTutor.toString().trim();
+
+            // Asegurarse que selectedDate y selectedTime no sean nulos antes de llamar al ViewModel
+            // La validación dentro del ViewModel también los chequeará.
+            // Aquí podrías poner un chequeo previo si quieres, antes de llamar a intentarGuardarCita.
+            // Por ejemplo:
+            // if (selectedDate == null) {
+            //     binding.textInputLayoutFechaCita.setError("Seleccione una fecha");
+            //     return;
+            // }
+            // if (selectedTime == null) {
+            //     binding.textInputLayoutHoraCita.setError("Seleccione una hora");
+            //     return;
+            // }
+
+            viewModel.intentarGuardarCita(pacienteDni, tipoVacuna, tutorDni, relacionTutor, selectedDate, selectedTime);
+        });
+    }
+
+    private void limpiarCampos() {
+        binding.editTextPacienteDni.setText("");
+        //binding.spinnerTipoVacuna.setText("", false); // Para AutoCompleteTextView, el 'false' evita que se filtre la lista
+        binding.editTextTutorDni.setText("");
+        //binding.spinnerRelacionTutor.setText("", false);
+        binding.editTextFechaCita.setText("");
+        binding.editTextHoraCita.setText("");
+        selectedDate = null;
+        selectedTime = null;
+
+        // Limpiar errores de los TextInputLayouts
+        binding.textInputLayoutPacienteDni.setError(null);
+        binding.textInputLayoutTipoVacuna.setError(null);
+        binding.textInputLayoutTutorDni.setError(null);
+        binding.textInputLayoutRelacionTutor.setError(null);
+        binding.textInputLayoutFechaCita.setError(null);
+        binding.textInputLayoutHoraCita.setError(null);
+
+        binding.editTextPacienteDni.requestFocus(); // Opcional: devolver el foco al primer campo
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null; // Importante para evitar memory leaks con ViewBinding en Fragments
+    }
+}

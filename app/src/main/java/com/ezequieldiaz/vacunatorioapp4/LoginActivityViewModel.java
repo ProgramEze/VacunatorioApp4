@@ -129,7 +129,7 @@ public class LoginActivityViewModel extends AndroidViewModel {
         ApiClient.MisEndPoints api = ApiClient.getEndPoints();
         String token = ApiClient.leerToken(getApplication());
         Call<Agente> call = api.miPerfil(token);
-        call.enqueue(new Callback<Agente>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Agente> call, Response<Agente> response) {
                 if (response.isSuccessful()) {

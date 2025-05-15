@@ -1,5 +1,7 @@
 package com.ezequieldiaz.vacunatorioapp4.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class TipoDeVacuna implements Serializable {
@@ -42,5 +44,11 @@ public class TipoDeVacuna implements Serializable {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

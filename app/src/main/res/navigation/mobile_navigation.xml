@@ -24,8 +24,8 @@
             app:destination="@id/nav_agregar_paciente" />
 
         <action
-            android:id="@+id/action_nav_home_to_nav_cita"
-            app:destination="@id/nav_cita" />
+            android:id="@+id/action_nav_home_to_nav_turno"
+            app:destination="@id/nav_turno" />
 
         <action
             android:id="@+id/action_nav_home_to_nav_aplicacion"
@@ -77,12 +77,12 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_cita"
-        android:name="com.ezequieldiaz.vacunatorioapp4.ui.cita.CitaFragment"
-        android:label="@string/menu_cita"
-        tools:layout="@layout/fragment_cita">
+        android:id="@+id/nav_turno"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.turno.TurnoFragment"
+        android:label="@string/menu_turno"
+        tools:layout="@layout/fragment_agregar_turno">
         <action
-            android:id="@+id/action_nav_cita_to_nav_home"
+            android:id="@+id/action_nav_turno_to_nav_home"
             app:destination="@id/nav_home" />
     </fragment>
 

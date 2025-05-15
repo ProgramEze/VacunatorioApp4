@@ -1,0 +1,481 @@
+package com.ezequieldiaz.vacunatorioapp4.ui.cita;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.util.Log;
+// Quita estas importaciones si ya no se usan directamente aquí.
+// import android.widget.DatePicker;
+// import android.widget.TimePicker;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
+import com.ezequieldiaz.vacunatorioapp4.model.RelacionTutor;
+import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
+import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
+import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class CitaFragmentViewModel extends AndroidViewModel {
+
+    private static final String TAG = "CargarCitaViewModel";
+    private static final String AGENTE_ID_KEY = "agenteId";
+    private static final String PREFS_NAME = "auth_prefs";
+
+    private SharedPreferences sharedPreferences;
+    private ApiClient.MisEndPoints apiService;
+    private Map<String, Integer> tiposVacunaMap = new HashMap<>();
+
+    private MutableLiveData<List<String>> mTiposVacunaNombres;
+    private MutableLiveData<List<String>> mHorasDisponibles; // Considera si esto se usará para filtrar el TimePickerDialog o si es solo una lista de referencia
+    private MutableLiveData<String> mMensaje;
+    private MutableLiveData<Boolean> mCitaGuardada;
+    private MutableLiveData<String> mErrorPacienteDni;
+    private MutableLiveData<String> mErrorTutorDni;
+    private MutableLiveData<String> mErrorFecha;
+    private MutableLiveData<String> mErrorHora;
+    private MutableLiveData<String> mErrorTipoVacuna;
+    private MutableLiveData<String> mErrorRelacionTutor; // Nuevo LiveData para error de relación
+
+
+    public CitaFragmentViewModel(@NonNull Application application) {
+        super(application);
+        sharedPreferences = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        apiService = ApiClient.getEndPoints();
+    }
+
+    // --- Getters para LiveData (con inicialización lazy) ---
+    public LiveData<List<String>> getMTiposVacunaNombres() {
+        if (mTiposVacunaNombres == null) {
+            mTiposVacunaNombres = new MutableLiveData<>();
+        }
+        return mTiposVacunaNombres;
+    }
+
+    public LiveData<List<String>> getMHorasDisponibles() {
+        if (mHorasDisponibles == null) {
+            mHorasDisponibles = new MutableLiveData<>();
+            cargarHorasDisponibles();
+        }
+        return mHorasDisponibles;
+    }
+
+    public LiveData<String> getMMensaje() {
+        if (mMensaje == null) {
+            mMensaje = new MutableLiveData<>();
+        }
+        return mMensaje;
+    }
+
+    public LiveData<Boolean> getMCitaGuardada() {
+        if (mCitaGuardada == null) {
+            mCitaGuardada = new MutableLiveData<>();
+        }
+        return mCitaGuardada;
+    }
+
+    public LiveData<String> getMErrorPacienteDni() {
+        if (mErrorPacienteDni == null) {
+            mErrorPacienteDni = new MutableLiveData<>();
+        }
+        return mErrorPacienteDni;
+    }
+
+    public LiveData<String> getMErrorTutorDni() {
+        if (mErrorTutorDni == null) {
+            mErrorTutorDni = new MutableLiveData<>();
+        }
+        return mErrorTutorDni;
+    }
+
+    public LiveData<String> getMErrorFecha() {
+        if (mErrorFecha == null) {
+            mErrorFecha = new MutableLiveData<>();
+        }
+        return mErrorFecha;
+    }
+
+    public LiveData<String> getMErrorHora() {
+        if (mErrorHora == null) {
+            mErrorHora = new MutableLiveData<>();
+        }
+        return mErrorHora;
+    }
+
+    public LiveData<String> getMErrorTipoVacuna() {
+        if (mErrorTipoVacuna == null) {
+            mErrorTipoVacuna = new MutableLiveData<>();
+        }
+        return mErrorTipoVacuna;
+    }
+
+    public LiveData<String> getMErrorRelacionTutor() { // Getter para el nuevo LiveData
+        if (mErrorRelacionTutor == null) {
+            mErrorRelacionTutor = new MutableLiveData<>();
+        }
+        return mErrorRelacionTutor;
+    }
+
+
+    public void cargarDatosIniciales() {
+        cargarTiposVacuna();
+        getMHorasDisponibles(); // Asegura que las horas estén disponibles (aunque la UI usará TimePickerDialog)
+    }
+
+    public void intentarGuardarCita(String pacienteDniStr, String tipoVacunaSeleccionada, String tutorDniStr,
+                                    String relacionTutorSeleccionada, LocalDate fechaCita, LocalTime horaCita) {
+        limpiarErroresYMensajes();
+
+        if (!validarEntradas(pacienteDniStr, tipoVacunaSeleccionada, tutorDniStr, relacionTutorSeleccionada, fechaCita, horaCita)) {
+            return;
+        }
+
+        int pacienteDni = Integer.parseInt(pacienteDniStr);
+        int tutorDni = Integer.parseInt(tutorDniStr); // Asumir que siempre habrá un DNI de tutor, ajustar si es opcional
+        RelacionTutor relacionTutor = parseRelacionTutor(relacionTutorSeleccionada);
+        Integer tipoVacunaId = tiposVacunaMap.get(tipoVacunaSeleccionada);
+
+        // Validaciones adicionales post-parseo (ya incluidas en validarEntradas, pero doble check no hace daño)
+        if (relacionTutor == null) { // Esta validación ahora está en validarEntradas
+            // mErrorRelacionTutor.setValue("Seleccione una relación con el tutor válida.");
+            // return; // Ya se maneja en validarEntradas
+        }
+        if (tipoVacunaId == null) { // Esta validación ahora está en validarEntradas
+            // mErrorTipoVacuna.setValue("Seleccione un tipo de vacuna válido.");
+            // return; // Ya se maneja en validarEntradas
+        }
+
+        int agenteId = leerAgenteId();
+        if (agenteId == -1) {
+            mMensaje.setValue("Error: No se pudo identificar al agente. Inicie sesión.");
+            return;
+        }
+
+        mMensaje.setValue("Verificando datos...");
+        obtenerPacienteYProceder(pacienteDni, tipoVacunaId, tutorDni, agenteId, relacionTutor, fechaCita, horaCita);
+    }
+
+    private int leerAgenteId() {
+        return sharedPreferences.getInt(AGENTE_ID_KEY, -1);
+    }
+
+    private void limpiarErroresYMensajes() {
+        mMensaje.setValue(null);
+        mCitaGuardada.setValue(false);
+        mErrorPacienteDni.setValue(null);
+        mErrorTutorDni.setValue(null);
+        mErrorFecha.setValue(null);
+        mErrorHora.setValue(null);
+        mErrorTipoVacuna.setValue(null);
+        mErrorRelacionTutor.setValue(null); // Limpiar nuevo error
+    }
+
+    private void cargarTiposVacuna() {
+        String token = ApiClient.leerToken(getApplication());
+        if (token == null || token.isEmpty()) {
+            mMensaje.postValue("Error de autenticación. No se pudo cargar tipos de vacuna.");
+            return;
+        }
+        String authToken = token.toLowerCase().startsWith("bearer ") ? token : "Bearer " + token;
+
+        Call<List<TipoDeVacuna>> call = apiService.getTiposDeVacunas(authToken);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<TipoDeVacuna>> call, @NonNull Response<List<TipoDeVacuna>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<TipoDeVacuna> tipos = response.body();
+                    tiposVacunaMap.clear();
+                    List<String> nombres = new ArrayList<>();
+                    for (TipoDeVacuna tipo : tipos) {
+                        if (tipo != null && tipo.getNombre() != null) {
+                            tiposVacunaMap.put(tipo.getNombre(), tipo.getId());
+                            nombres.add(tipo.getNombre());
+                        }
+                    }
+                    nombres.forEach(nombre -> Log.d(TAG, "Tipo de vacuna: " + nombre));
+                    mTiposVacunaNombres.setValue(nombres);
+                } else {
+                    Log.e(TAG, "Error al cargar tipos de vacuna: " + response.code() + " " + response.message());
+                    mMensaje.postValue("Error al cargar tipos de vacuna (" + response.code() + ")");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<TipoDeVacuna>> call, @NonNull Throwable t) {
+                Log.e(TAG, "Fallo al cargar tipos de vacuna", t);
+                mMensaje.postValue("Error de red al cargar tipos de vacuna.");
+            }
+        });
+    }
+
+    private void cargarHorasDisponibles() {
+        List<String> horas = new ArrayList<>();
+        horas.add("08:00"); horas.add("08:30"); horas.add("09:00"); horas.add("09:30");
+        horas.add("10:00"); horas.add("10:30"); horas.add("11:00"); horas.add("11:30");
+        horas.add("12:00"); horas.add("12:30"); horas.add("13:00"); horas.add("13:30");
+        horas.add("14:00"); horas.add("14:30"); horas.add("15:00"); horas.add("15:30");
+        horas.add("16:00");
+        mHorasDisponibles.setValue(horas); // Usar setValue ya que es llamado desde el constructor o hilo principal
+    }
+
+    private boolean validarEntradas(String pacienteDni, String tipoVacunaSeleccionada, String tutorDni,
+                                    String relacionTutorSeleccionada, LocalDate fechaCita, LocalTime horaCita) {
+        boolean valid = true;
+
+        if (!validarDni(pacienteDni)) {
+            mErrorPacienteDni.setValue("DNI de paciente inválido (7 u 8 dígitos)");
+            valid = false;
+        } else {
+            mErrorPacienteDni.setValue(null); // Limpiar error si es válido
+        }
+
+        // Validar DNI del tutor solo si se ingresó algo, o hacerlo obligatorio
+        // Aquí asumimos que es obligatorio si se ingresa, pero podría ser opcional
+        if (tutorDni == null || tutorDni.trim().isEmpty()) {
+            // Si es opcional y está vacío, no es un error de formato
+            // mErrorTutorDni.setValue("DNI del tutor es requerido"); // Descomentar si es obligatorio
+            // valid = false;
+            mErrorTutorDni.setValue(null); // Si está vacío y es opcional, no hay error
+        } else if (!validarDni(tutorDni)) {
+            mErrorTutorDni.setValue("DNI de tutor inválido (7 u 8 dígitos)");
+            valid = false;
+        } else {
+            mErrorTutorDni.setValue(null); // Limpiar error si es válido
+        }
+
+
+        if (tipoVacunaSeleccionada == null || tipoVacunaSeleccionada.isEmpty() || tiposVacunaMap.get(tipoVacunaSeleccionada) == null) {
+            mErrorTipoVacuna.setValue("Seleccione un tipo de vacuna");
+            valid = false;
+        } else {
+            mErrorTipoVacuna.setValue(null);
+        }
+
+        if (relacionTutorSeleccionada == null || relacionTutorSeleccionada.isEmpty() || parseRelacionTutor(relacionTutorSeleccionada) == null) {
+            // Solo validar si hay DNI de tutor ingresado, o si la relación es siempre obligatoria
+            if (tutorDni != null && !tutorDni.trim().isEmpty()) {
+                mErrorRelacionTutor.setValue("Seleccione una relación con el tutor");
+                valid = false;
+            } else {
+                mErrorRelacionTutor.setValue(null); // No hay error si no hay tutor
+            }
+        } else {
+            mErrorRelacionTutor.setValue(null);
+        }
+
+
+        if (fechaCita == null) {
+            mErrorFecha.setValue("Seleccione una fecha para la cita");
+            valid = false;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (fechaCita.isBefore(LocalDate.now())) {
+                mErrorFecha.setValue("La fecha de la cita no puede ser pasada");
+                valid = false;
+            } else {
+                mErrorFecha.setValue(null);
+            }
+        } else {
+            mErrorFecha.setValue(null); // Para versiones antiguas, no se puede hacer esta validación de forma simple aquí
+        }
+
+
+        if (horaCita == null) {
+            mErrorHora.setValue("Seleccione una hora para la cita");
+            valid = false;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (fechaCita != null && fechaCita.isEqual(LocalDate.now()) && horaCita.isBefore(LocalTime.now())) {
+                mErrorHora.setValue("La hora de la cita no puede ser pasada");
+                valid = false;
+            } else {
+                mErrorHora.setValue(null);
+            }
+        } else {
+            mErrorHora.setValue(null);
+        }
+
+        return valid;
+    }
+
+
+    private void obtenerPacienteYProceder(int pacienteDni, int tipoVacunaId, int tutorDni, int agenteId,
+                                          RelacionTutor relacionTutor, LocalDate fechaCita, LocalTime horaCita) {
+        String token = ApiClient.leerToken(getApplication());
+        if (token == null || token.isEmpty()) {
+            mMensaje.postValue("Error de autenticación."); return;
+        }
+        String authToken = token.toLowerCase().startsWith("bearer ") ? token : "Bearer " + token;
+
+        mMensaje.postValue("Buscando paciente...");
+        Call<Paciente> callPaciente = apiService.getPaciente(authToken, pacienteDni);
+        callPaciente.enqueue(new Callback<Paciente>() {
+            @Override
+            public void onResponse(@NonNull Call<Paciente> call, @NonNull Response<Paciente> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getId() > 0) {
+                    int pacienteId = response.body().getId();
+                    // Si el DNI del tutor está vacío, proceder directamente a guardar sin buscar tutor.
+                    // Asumiendo que tutorId puede ser 0 o un valor especial si no hay tutor.
+                    // O que el endpoint registrarCita maneja tutorId opcional.
+                    // Aquí, si tutorDni es 0 (o se parseó de un string vacío a 0), se pasará ese 0.
+                    // La lógica del backend debe manejar un tutorId=0 o un parámetro opcional.
+                    // Si se necesita un tutorId válido siempre, la validación inicial debe asegurar que tutorDni no esté vacío.
+                    if (tutorDni == 0 && (relacionTutor == null || relacionTutor.toString().isEmpty())) { // Asumiendo que 0 indica sin tutor
+                        // Llamar a una versión de procederAGuardarTurno que no requiera tutorId, o pasar un valor especial.
+                        // Por ahora, asumimos que la API puede manejar un tutorId inválido o 0 si no hay tutor.
+                        // Ajustar según la API. Si el tutor es siempre requerido, esta rama no es necesaria
+                        // y la validación inicial debería fallar si tutorDni está vacío.
+                        Log.i(TAG, "No se proporcionó DNI de tutor, procediendo sin tutor.");
+                        procederAGuardarTurno(pacienteId, tipoVacunaId, 0, agenteId, relacionTutor, fechaCita, horaCita); // Pasar 0 o un ID que indique "sin tutor"
+                    } else {
+                        obtenerTutorYProceder(pacienteId, tipoVacunaId, tutorDni, agenteId, relacionTutor, fechaCita, horaCita);
+                    }
+                } else if (response.code() == 404 || response.body() == null || response.body().getId() <= 0 ) {
+                    Log.w(TAG, "Paciente no encontrado con DNI: " + pacienteDni);
+                    mMensaje.postValue("Paciente con DNI " + pacienteDni + " no encontrado.");
+                    mErrorPacienteDni.postValue("Paciente no registrado");
+                } else {
+                    Log.e(TAG, "Error al obtener paciente: " + response.code() + " " + response.message());
+                    mMensaje.postValue("Error al verificar paciente (" + response.code() + ")");
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Paciente> call, @NonNull Throwable t) {
+                Log.e(TAG, "Fallo al obtener paciente", t);
+                mMensaje.postValue("Error de red al buscar paciente.");
+            }
+        });
+    }
+
+    private void obtenerTutorYProceder(int pacienteId, int tipoVacunaId, int tutorDni, int agenteId,
+                                       RelacionTutor relacionTutor, LocalDate fechaCita, LocalTime horaCita) {
+        // Si tutorDni es 0 o inválido, y el flujo llegó aquí, significa que se espera un tutor.
+        // Esta validación podría estar antes, pero por si acaso.
+        if (tutorDni <= 0) { // Asumiendo que un DNI válido no será 0.
+            Log.w(TAG, "Intento de buscar tutor con DNI inválido: " + tutorDni);
+            mErrorTutorDni.postValue("DNI de tutor inválido para la búsqueda.");
+            mMensaje.postValue("No se puede buscar tutor con el DNI proporcionado.");
+            return;
+        }
+
+        String token = ApiClient.leerToken(getApplication());
+        if (token == null || token.isEmpty()) {
+            mMensaje.postValue("Error de autenticación."); return;
+        }
+        String authToken = token.toLowerCase().startsWith("bearer ") ? token : "Bearer " + token;
+
+        mMensaje.postValue("Buscando tutor...");
+        Call<Tutor> callTutor = apiService.getTutor(authToken, tutorDni);
+        callTutor.enqueue(new Callback<Tutor>() {
+            @Override
+            public void onResponse(@NonNull Call<Tutor> call, @NonNull Response<Tutor> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getId() > 0) {
+                    int tutorId = response.body().getId();
+                    procederAGuardarTurno(pacienteId, tipoVacunaId, tutorId, agenteId, relacionTutor, fechaCita, horaCita);
+                } else if (response.code() == 404 || response.body() == null || response.body().getId() <= 0) {
+                    Log.w(TAG, "Tutor no encontrado con DNI: " + tutorDni);
+                    mMensaje.postValue("Tutor con DNI " + tutorDni + " no encontrado.");
+                    mErrorTutorDni.postValue("Tutor no registrado");
+                } else {
+                    Log.e(TAG, "Error al obtener tutor: " + response.code() + " " + response.message());
+                    mMensaje.postValue("Error al verificar tutor (" + response.code() + ")");
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Tutor> call, @NonNull Throwable t) {
+                Log.e(TAG, "Fallo al obtener tutor", t);
+                mMensaje.postValue("Error de red al buscar tutor.");
+            }
+        });
+    }
+
+    private void procederAGuardarTurno(int pacienteId, int tipoVacunaId, int tutorId, int agenteId,
+                                       RelacionTutor relacionTutor, LocalDate fechaCita, LocalTime horaCita) {
+        String token = ApiClient.leerToken(getApplication());
+        if (token == null || token.isEmpty()) {
+            mMensaje.postValue("Error de autenticación."); return;
+        }
+        String authToken = token.toLowerCase().startsWith("bearer ") ? token : "Bearer " + token;
+
+        int aplicacionIdPlaceholder = 0; // Revisar si esto es necesario o cómo debe manejarse.
+
+        mMensaje.postValue("Guardando cita...");
+
+        // Construir el cuerpo de la solicitud. Asumiendo que la API toma un objeto o parámetros individuales.
+        // El endpoint "registrarCita" en tu ApiClient.MisEndPoints debe coincidir con esto.
+        // Nota: La horaCita no se está enviando según tu comentario ("API parece no usarla").
+        // Si se necesitara, deberías agregarla al cuerpo o parámetros.
+        Call<Void> callGuardar = apiService.registrarCita(
+                authToken,
+                pacienteId,
+                tipoVacunaId,
+                tutorId, // Puede ser 0 si el tutor es opcional y no se proporcionó
+                agenteId,
+                aplicacionIdPlaceholder,
+                fechaCita,
+                relacionTutor // Puede ser null si no hay tutor o la relación no es aplicable
+        );
+
+        callGuardar.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "Cita guardada exitosamente para paciente ID: " + pacienteId);
+                    mMensaje.postValue("Cita guardada con éxito");
+                    mCitaGuardada.postValue(true);
+                } else {
+                    String errorBody = "";
+                    try { if (response.errorBody() != null) errorBody = response.errorBody().string(); } catch (Exception e) { /* ignore */ }
+                    Log.e(TAG, "Error al guardar la cita: " + response.code() + " " + response.message() + " Body: " + errorBody);
+                    if (response.code() == 400 && errorBody.toLowerCase().contains("existente")) { // Ejemplo de manejo de error específico
+                        mMensaje.postValue("Error: Ya existe una cita para la fecha y paciente/tipo de vacuna.");
+                    } else {
+                        mMensaje.postValue("Error al guardar la cita (" + response.code() + ").");
+                    }
+                    mCitaGuardada.postValue(false);
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Log.e(TAG, "Fallo al guardar la cita", t);
+                mMensaje.postValue("Error de red al guardar la cita.");
+                mCitaGuardada.postValue(false);
+            }
+        });
+    }
+
+    private boolean validarDni(String dni) {
+        return dni != null && dni.matches("\\d{7,8}");
+    }
+
+    // Quitar obtenerFecha y obtenerHora de aquí, ya que el Fragment se encargará.
+    // private LocalDate obtenerFecha(DatePicker datePicker) { ... }
+    // private LocalTime obtenerHora(TimePicker timePicker) { ... }
+
+    private RelacionTutor parseRelacionTutor(String relacionStr) {
+        if (relacionStr == null || relacionStr.trim().isEmpty()) return null;
+        try {
+            // Asegúrate que los strings del spinner coincidan con los nombres del Enum.
+            // Ejemplo: si el spinner tiene "Padre / Madre", y el enum es PADRE_MADRE
+            return RelacionTutor.valueOf(relacionStr.toUpperCase().replace(" ", "").replace("/", "_"));
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Valor inválido para RelacionTutor: " + relacionStr, e);
+            return null;
+        }
+    }
+}

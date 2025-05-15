@@ -30,8 +30,8 @@ public class AgregarPacienteFragmentViewModel extends AndroidViewModel {
         return resultado;
     }
 
-    public void guardarPaciente(String nombre, String apellido, String dni, LocalDate fechaNacimiento, Genero genero) {
-        Paciente paciente = new Paciente(); // Asegurate de tener setters
+    public void guardarPaciente(String nombre, String apellido, String dni, String fechaNacimiento, String genero) {
+        Paciente paciente = new Paciente();
         paciente.setNombre(nombre);
         paciente.setApellido(apellido);
         paciente.setDni(dni);
@@ -42,6 +42,7 @@ public class AgregarPacienteFragmentViewModel extends AndroidViewModel {
 
         ApiClient.MisEndPoints api = ApiClient.getEndPoints();
         Call<Void> call = api.registrarPaciente(token, dni, nombre, apellido, fechaNacimiento, genero);
+        Log.d("fechaDeNacimiento", fechaNacimiento.toString());
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

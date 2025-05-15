@@ -16,7 +16,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.5"
+        tools:ignore="UnknownId" />
 
     <Button
         android:id="@+id/btnRegistrarPaciente"
@@ -35,7 +36,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Registrar tutores"
-        app:layout_constraintBottom_toTopOf="@+id/btnCita"
+        app:layout_constraintBottom_toTopOf="@+id/btnTurno"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,10 +44,10 @@
         app:layout_constraintVertical_bias="0.5" />
 
     <Button
-        android:id="@+id/btnCita"
+        android:id="@+id/btnTurno"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Otorgar cita"
+        android:text="Otorgar turno"
         app:layout_constraintBottom_toTopOf="@+id/btnAplicacion"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -63,7 +64,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCita"
+        app:layout_constraintTop_toBottomOf="@+id/btnTurno"
         app:layout_constraintVertical_bias="0.5" />
 
     <Button

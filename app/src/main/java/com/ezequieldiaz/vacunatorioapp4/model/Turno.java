@@ -1,7 +1,7 @@
 package com.ezequieldiaz.vacunatorioapp4.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Turno implements Serializable {
     private int id;
@@ -10,12 +10,12 @@ public class Turno implements Serializable {
     private int tutorId;
     private int agenteId;
     private int aplicacionId;
-    private LocalDate cita;
-    private RelacionTutor relacionTutor;
+    private String cita;
+    private String relacionTutor;
 
     public Turno() {}
 
-    public Turno(int id, int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, LocalDate cita, RelacionTutor relacionTutor) {
+    public Turno(int id, int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, String cita, String relacionTutor) {
         this.id = id;
         this.pacienteId = pacienteId;
         this.tipoDeVacunaId = tipoDeVacunaId;
@@ -26,7 +26,7 @@ public class Turno implements Serializable {
         this.relacionTutor = relacionTutor;
     }
 
-    public Turno(int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, LocalDate cita, RelacionTutor relacionTutor) {
+    public Turno(int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, String cita, String relacionTutor) {
         this.pacienteId = pacienteId;
         this.tipoDeVacunaId = tipoDeVacunaId;
         this.tutorId = tutorId;
@@ -84,19 +84,19 @@ public class Turno implements Serializable {
         this.aplicacionId = aplicacionId;
     }
 
-    public LocalDate getCita() {
+    public String getCita() {
         return cita;
     }
 
-    public void setCita(LocalDate cita) {
+    public void setCita(String cita) {
         this.cita = cita;
     }
 
-    public RelacionTutor getRelacionTutor() {
+    public String getRelacionTutor() {
         return relacionTutor;
     }
 
-    public void setRelacionTutor(RelacionTutor relacionTutor) {
+    public void setRelacionTutor(String relacionTutor) {
         this.relacionTutor = relacionTutor;
     }
 }

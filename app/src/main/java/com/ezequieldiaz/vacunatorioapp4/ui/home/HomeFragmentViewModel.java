@@ -1,19 +1,22 @@
 package com.ezequieldiaz.vacunatorioapp4.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.ezequieldiaz.vacunatorioapp4.util.SingleLiveEvent;
+
 public class HomeFragmentViewModel extends ViewModel {
-    private MutableLiveData<Navegacion> navegacion = new MutableLiveData<>();
+    private final SingleLiveEvent<Navegacion> navegacion = new SingleLiveEvent<>();
 
     public LiveData<Navegacion> getNavegacion() {
         return navegacion;
     }
 
     public void irAFragment(Navegacion navegacion) {
+        Log.d("debug_nav", "navegacion changed: " + navegacion);
         this.navegacion.setValue(navegacion);
     }
 

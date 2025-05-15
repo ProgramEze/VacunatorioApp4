@@ -8,13 +8,13 @@ public class Paciente implements Serializable {
     private String dni;
     private String nombre;
     private String apellido;
-    private LocalDate fechaDeNacimiento;
-    private Genero genero;
+    private String fechaDeNacimiento;
+    private String genero;
 
     public Paciente(){
     }
 
-    public Paciente(int id, String dni, String nombre, String apellido, LocalDate fechaDeNacimiento, Genero genero) {
+    public Paciente(int id, String dni, String nombre, String apellido, String fechaDeNacimiento, String genero) {
         this.id = id;
         this.dni = dni;
         this.nombre = nombre;
@@ -23,7 +23,7 @@ public class Paciente implements Serializable {
         this.genero = genero;
     }
 
-    public Paciente(String dni, String nombre, String apellido, LocalDate fechaDeNacimiento, Genero genero) {
+    public Paciente(String dni, String nombre, String apellido, String fechaDeNacimiento, String genero) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -63,19 +63,19 @@ public class Paciente implements Serializable {
         this.apellido = apellido;
     }
 
-    public LocalDate getFechaDeNacimiento() {
+    public String getFechaDeNacimiento() {
         return fechaDeNacimiento;
     }
 
-    public void setFechaDeNacimiento(LocalDate fechaDeNacimiento) {
+    public void setFechaDeNacimiento(String fechaDeNacimiento) {
         this.fechaDeNacimiento = fechaDeNacimiento;
     }
 
-    public Genero getGenero() {
+    public String getGenero() {
         return genero;
     }
 
-    public void setGenero(Genero genero) {
+    public void setGenero(String genero) {
         this.genero = genero;
     }
 }

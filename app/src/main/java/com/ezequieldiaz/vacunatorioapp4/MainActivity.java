@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_perfil, R.id.nav_cambiar_password, R.id.nav_agregar_paciente, R.id.nav_agregar_tutor, R.id.nav_cita, R.id.nav_aplicacion, R.id.nav_deslogeo)
+                R.id.nav_home, R.id.nav_perfil, R.id.nav_cambiar_password, R.id.nav_agregar_paciente, R.id.nav_agregar_tutor, R.id.nav_turno, R.id.nav_aplicacion, R.id.nav_deslogeo)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -43,16 +43,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
         // Leer la información del usuario desde SharedPreferences
-        sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        sharedPreferences = getApplication().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String nombre = sharedPreferences.getString("nombre completo", "example");
-        String email = sharedPreferences.getString("email", "email@example.com");
+        String matricula = sharedPreferences.getString("matricula", "00000000");
 
         // Actualizar el encabezado del NavigationView
         View headerView = navigationView.getHeaderView(0);
         TextView navHeaderTitle = headerView.findViewById(R.id.nav_header_title);
         TextView navHeaderSubtitle = headerView.findViewById(R.id.nav_header_subtitle);
-        navHeaderTitle.setText(nombre);
-        navHeaderSubtitle.setText(email);
+        navHeaderTitle.setText("Agente: " + nombre);
+        navHeaderSubtitle.setText("Mat: " + matricula);
     }
 
     @Override

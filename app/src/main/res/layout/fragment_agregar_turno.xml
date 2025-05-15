@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="119dp"
+        android:text="Agendar cita de vacunación"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDNIPaciente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="67dp"
+        android:text="DNI del paciente:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etDNIPaciente"
+        android:layout_width="250dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="DNI del paciente"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/tvDNIPaciente"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+    <EditText
+        android:id="@+id/etDNITutor"
+        android:layout_width="250dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="DNI del tutor"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/tvDNITutor"
+        app:layout_constraintTop_toBottomOf="@+id/spnTipoDeVacuna" />
+
+    <Spinner
+        android:id="@+id/spnTipoDeVacuna"
+        android:layout_width="300dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTipoDeVacuna"
+        app:layout_constraintTop_toBottomOf="@+id/etDNIPaciente" />
+
+    <Spinner
+        android:id="@+id/spnRelacionTutor"
+        android:layout_width="286dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvRelacionTutor"
+        app:layout_constraintTop_toBottomOf="@+id/etDNITutor" />
+
+    <TextView
+        android:id="@+id/tvTipoDeVacuna"
+        android:layout_width="104dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="46dp"
+        android:layout_marginEnd="7dp"
+        android:text="Tipo de vacuna:"
+        app:layout_constraintEnd_toStartOf="@+id/spnTipoDeVacuna"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDNIPaciente" />
+
+    <TextView
+        android:id="@+id/tvDNITutor"
+        android:layout_width="104dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="5dp"
+        android:text="DNI del tutor:"
+        app:layout_constraintEnd_toStartOf="@+id/etDNITutor"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTipoDeVacuna" />
+
+    <TextView
+        android:id="@+id/tvRelacionTutor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="12dp"
+        android:text="Relación del tutor:"
+        app:layout_constraintEnd_toStartOf="@+id/spnRelacionTutor"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDNITutor" />
+
+    <TextView
+        android:id="@+id/tvDiaYHoraCita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="136dp"
+        android:text="Fecha y hora de la cita"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spnRelacionTutor" />
+
+    <EditText
+        android:id="@+id/etdFecha"
+        android:layout_width="299dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="Seleccionar fecha"
+        android:inputType="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvFechaCita"
+        app:layout_constraintTop_toBottomOf="@+id/tvDiaYHoraCita" />
+
+    <TextView
+        android:id="@+id/tvFechaCita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="75dp"
+        android:layout_marginEnd="10dp"
+        android:text="Fecha de la cita:"
+        app:layout_constraintEnd_toStartOf="@+id/etdFecha"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRelacionTutor" />
+
+    <TextView
+        android:id="@+id/tvHoraCita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:layout_marginEnd="20dp"
+        android:text="Hora de la cita:"
+        app:layout_constraintEnd_toStartOf="@+id/spnHorarios"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFechaCita" />
+
+    <Spinner
+        android:id="@+id/spnHorarios"
+        android:layout_width="296dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvHoraCita"
+        app:layout_constraintTop_toBottomOf="@+id/etdFecha" />
+
+    <Button
+        android:id="@+id/btnConfirmarCita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Confirmar turno"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnCargarTurno" />
+
+    <Button
+        android:id="@+id/btnCancelarCita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="48dp"
+        android:text="Cancelar turno"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnConfirmarCita" />
+
+    <ImageButton
+        android:id="@+id/ibCargarPaciente"
+        android:layout_width="53dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toEndOf="@+id/etDNIPaciente"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        app:srcCompat="@drawable/quantum_ic_search_grey600_24"
+        tools:ignore="MissingConstraints" />
+
+    <ImageButton
+        android:id="@+id/ibCargarTutor"
+        android:layout_width="53dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/etDNIPaciente"
+        app:layout_constraintTop_toBottomOf="@+id/spnTipoDeVacuna"
+        app:srcCompat="@drawable/quantum_ic_search_grey600_24"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/btnLimpiar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Limpiar campos"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spnHorarios" />
+
+    <Button
+        android:id="@+id/btnCargarTurno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Cargar turno"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnLimpiar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

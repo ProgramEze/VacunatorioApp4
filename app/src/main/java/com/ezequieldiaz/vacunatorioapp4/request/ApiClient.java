@@ -7,13 +7,19 @@ import com.ezequieldiaz.vacunatorioapp4.model.Agente;
 import com.ezequieldiaz.vacunatorioapp4.model.Aplicacion;
 import com.ezequieldiaz.vacunatorioapp4.model.Genero;
 import com.ezequieldiaz.vacunatorioapp4.model.Laboratorio;
+import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
+import com.ezequieldiaz.vacunatorioapp4.model.RelacionTutor;
+import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
+import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -85,8 +91,11 @@ public class ApiClient {
         @GET("Tutores/{dni}")
         Call<Tutor> getTutor(@Header("Authorization") String token, @Path("dni") int id);
 
+        @GET("Pacientes/{dni}")
+        Call<Paciente> getPaciente(@Header("Authorization") String token, @Path("dni") int id);
+
         @FormUrlEncoded
-        @POST("tutores")  // Ruta del controlador en ASP.NET Core
+        @POST("tutores")
         Call<Void> registrarTutor(
                 @Header("Authorization") String token,
                 @Field("dni") String dni,
@@ -97,15 +106,55 @@ public class ApiClient {
         );
 
         @FormUrlEncoded
-        @POST("pacientes")  // Ruta del controlador en ASP.NET Core
+        @POST("pacientes")
         Call<Void> registrarPaciente(
-                @Header("Authorization") String token,
-                @Field("dni") String dni,
-                @Field("nombre") String nombre,
-                @Field("apellido") String apellido,
-                @Field("fechaNacimiento") LocalDate fechaNacimiento,
-                @Field("genero") Genero genero
+            @Header("Authorization") String token,
+            @Field("dni") String dni,
+            @Field("nombre") String nombre,
+            @Field("apellido") String apellido,
+            @Field("fechaDeNacimiento") String fechaNacimiento,
+            @Field("genero") String genero
         );
+
+        @GET("turnos/{id}")
+        Call<Turno> getTurno(@Header("Authorization") String token, @Path("id") int id);
+
+        @FormUrlEncoded
+        @POST("turnos")
+        Call<Turno> registrarTurno(
+            @Header("Authorization") String token,
+            @Field("PacienteId") int pacienteId,
+            @Field("TipoDeVacunaId") int tipoDeVacunaId,
+            @Field("TutorId") int tutorId,
+            @Field("AgenteId") String agenteId,
+            @Field("AplicacionId") int aplicacionId,
+            @Field("Cita") String cita,
+            @Field("RelacionTutor") String relacionTutor
+        );
+
+        @FormUrlEncoded
+        @PUT("turnos/{id}")
+        Call<Void> modificarTurno(
+                @Header("Authorization") String token,
+                @Field("PacienteId") int pacienteId,
+                @Field("TipoDeVacunaId") int tipoDeVacunaId,
+                @Field("TutorId") int tutorId,
+                @Field("AgenteId") int agenteId,
+                @Field("AplicacionId") int aplicacionId,
+                @Field("Cita") LocalDate cita,
+                @Field("RelacionTutor") RelacionTutor relacionTutor
+        );
+
+        @FormUrlEncoded
+        @PUT("turnos/cancelarturno/{id}")
+        Call<Turno> cancelarTurno(@Header("Authorization") String token, @Path("id") int id);
+
+        @GET("TipoDeVacunas")
+        Call<List<TipoDeVacuna>> getTiposDeVacunas(@Header("Authorization") String token);
+
+        @GET("tiposdevacunas/{id}")
+        Call<TipoDeVacuna> getTipoDeVacuna(@Header("Authorization") String token, @Path("id") int id);
+
     }
 
     public static void guardarToken(String token, Context context) {

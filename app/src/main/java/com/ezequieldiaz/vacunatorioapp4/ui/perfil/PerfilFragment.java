@@ -30,7 +30,7 @@ public class PerfilFragment extends Fragment {
         vm = new ViewModelProvider(this).get(PerfilFragmentViewModel.class);
         binding = FragmentPerfilBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        vm.getMAgente().observe(getViewLifecycleOwner(), new Observer<Agente>() {
+        vm.getMAgente().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(Agente agente) {
                 binding.etMatricula.setText(agente.getMatricula() + "");
