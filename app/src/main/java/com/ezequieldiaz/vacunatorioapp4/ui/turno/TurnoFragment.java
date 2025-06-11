@@ -1,12 +1,8 @@
 package com.ezequieldiaz.vacunatorioapp4.ui.turno;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +14,6 @@ import android.widget.DatePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,27 +25,20 @@ import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeParseException;
 
 public class TurnoFragment extends Fragment {
-
     private TurnoFragmentViewModel vm;
     private FragmentTurnoBinding binding;
 
-    // En tu Fragment o Activity, fuera de cualquier método, como constantes
-    private static final int REQUEST_CODE_SCAN_PACIENTE_DNI = 1; // Un número único para el paciente
-    private static final int REQUEST_CODE_SCAN_TUTOR_DNI = 2;   // Otro número único para el tutor
-
-
     @SuppressLint("ClickableViewAccessibility")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTurnoBinding.inflate(inflater, container, false);
@@ -60,16 +48,33 @@ public class TurnoFragment extends Fragment {
 
         vm.getMListaTipo().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
-            public void onChanged(List<TipoDeVacuna> tipos) {
-                ArrayAdapter<TipoDeVacuna> tipoAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, tipos);
-                binding.spnTipoDeVacuna.setAdapter(tipoAdapter);
+            public void onChanged(List<TipoDeVacuna> tiposDeVacuna) {
+                    ArrayAdapter<TipoDeVacuna> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            tiposDeVacuna
+                    ) {
+                        @Override
+                        public boolean isEnabled(int position) {
+                            return position != 0;
+                        }
+                    };
+
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spnTipoDeVacuna.setAdapter(adapter);
             }
         });
 
         vm.getMRelaciones().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<String> relaciones) {
-                ArrayAdapter<String> relacionAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, relaciones);
+                ArrayAdapter<String> relacionAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, relaciones){
+                    @Override
+                    public boolean isEnabled(int position) {
+                        return position != 0;
+                    }
+                };
+                relacionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 binding.spnRelacionTutor.setAdapter(relacionAdapter);
             }
         });
@@ -77,7 +82,13 @@ public class TurnoFragment extends Fragment {
         vm.getMHorarios().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<String> horarios) {
-                ArrayAdapter<String> horarioAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, horarios);
+                ArrayAdapter<String> horarioAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, horarios){
+                    @Override
+                    public boolean isEnabled(int position) {
+                        return position != 0;
+                    }
+                };
+                horarioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 binding.spnHorarios.setAdapter(horarioAdapter);
             }
         });
@@ -89,11 +100,10 @@ public class TurnoFragment extends Fragment {
             }
         });
 
-        // Observa el evento para mostrar el selector de fecha
         vm.getShowDatePickerEvent().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
-            public void onChanged(Long initialDateMillis) {
-                showDatePicker(initialDateMillis);
+            public void onChanged(Long fechaSeleccionada) {
+                mostrarFechaSelecionada(fechaSeleccionada);
             }
         });
 
@@ -104,6 +114,16 @@ public class TurnoFragment extends Fragment {
             }
         });
 
+        vm.getMTurno().observe(getViewLifecycleOwner(), new Observer<>() {
+            @Override
+            public void onChanged(Turno turno) {
+                binding.etDNIPaciente.setText(turno.getPaciente().getDni());
+                binding.etDNITutor.setText(turno.getTutor().getDni());
+                binding.spnTipoDeVacuna.setSelection(turno.getTipoDeVacuna().getId()-1);
+                binding.spnRelacionTutor.setSelection(vm.cargarTutor(turno.getRelacionTutor()));
+            }
+        });
+
         vm.getMTutor().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(Tutor t) {
@@ -111,21 +131,42 @@ public class TurnoFragment extends Fragment {
             }
         });
 
+        vm.getMLimpiar().observe(getViewLifecycleOwner(), new Observer<>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                limpiarCampos();
+            }
+        });
+
+        vm.getMensaje().observe(getViewLifecycleOwner(), new Observer<>() {
+            @Override
+            public void onChanged(String msj) {
+                mostrarToast(msj);
+            }
+        });
+
+        vm.getMConfirmar().observe(getViewLifecycleOwner(), new Observer<>() {
+            @Override
+            public void onChanged(String s) {
+                binding.btnConfirmarCita.setText(s);
+            }
+        });
+
         binding.ibCargarPaciente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Iniciar la actividad del escáner para el PACIENTE, usando su requestCode
-                Intent intent = new Intent(requireContext(), EscanerActivity.class); // O tu actividad de escaneo
-                startActivityForResult(intent, REQUEST_CODE_SCAN_PACIENTE_DNI);
+                binding.etDNIPaciente.setText("");
+                Intent intent = new Intent(requireContext(), EscanerActivity.class);
+                startActivityForResult(intent, 1);
             }
         });
 
         binding.ibCargarTutor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Iniciar la actividad del escáner para el TUTOR, usando su requestCode
-                Intent intent = new Intent(requireContext(), EscanerActivity.class); // O tu actividad de escaneo
-                startActivityForResult(intent, REQUEST_CODE_SCAN_TUTOR_DNI);
+                binding.etDNITutor.setText("");
+                Intent intent = new Intent(requireContext(), EscanerActivity.class);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -133,54 +174,28 @@ public class TurnoFragment extends Fragment {
             limpiarCampos();
         });
 
+        binding.btnCargarTurno.setOnClickListener(v -> {
+            try {
+                binding.etDNIPaciente.setText("");
+                binding.etDNITutor.setText("");
+                binding.spnTipoDeVacuna.setSelection(0);
+                binding.spnRelacionTutor.setSelection(0);
+                vm.cargarTurno(LocalDateTime.of(LocalDate.parse(binding.etdFecha.getText().toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())), LocalTime.parse(binding.spnHorarios.getSelectedItem().toString(), DateTimeFormatter.ofPattern("HH:mm"+":00", Locale.getDefault()))).toString());
+            }catch (DateTimeParseException e) {
+                mostrarToast("Error al parsear fecha u hora");
+            }
+        });
+
         binding.btnConfirmarCita.setOnClickListener(v -> {
-            Turno turno = new Turno();
             vm.buscarDNITutor(binding.etDNITutor.getText().toString());
             vm.buscarDNIPaciente(binding.etDNIPaciente.getText().toString());
-            turno.setTipoDeVacunaId(binding.spnTipoDeVacuna.getSelectedItemPosition()+1);
-            turno.setRelacionTutor(binding.spnRelacionTutor.getSelectedItem().toString());
-            // Obtener la fecha del EditText
-            String fechaString = binding.etdFecha.getText().toString();
-            // Obtener la hora seleccionada del Spinner
-            String horaString = (String) binding.spnHorarios.getSelectedItem();
-            // Definir los formateadores para parsear las cadenas
-            // Asegúrate de que el formato coincida con cómo se muestran la fecha y la hora en tus Views
-            DateTimeFormatter fechaFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
-            DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault());
-            try {
-                // Parsear la cadena de fecha a LocalDate
-                LocalDate fecha = LocalDate.parse(fechaString, fechaFormatter);
-
-                // Parsear la cadena de hora a LocalTime
-                LocalTime hora = LocalTime.parse(horaString, horaFormatter);
-
-                // Combinar LocalDate y LocalTime para obtener un LocalDateTime
-                LocalDateTime fechaHoraTurno = LocalDateTime.of(fecha, hora);
-                turno.setCita(fechaHoraTurno.toString());
-
-                // Ahora tienes un objeto LocalDateTime con la fecha y hora seleccionadas
-                // Puedes usar fechaHoraTurno para tus operaciones
-
-                // Ejemplo: Imprimir el LocalDateTime
-                Log.d("TurnoFragment", "LocalDateTime creado: " + fechaHoraTurno.toString());
-                vm.guardarTurno(turno);
-
-            } catch (DateTimeParseException e) {
-                // Manejar el error si las cadenas de fecha u hora no tienen el formato esperado
-                Log.e("TurnoFragment", "Error al parsear fecha u hora: " + e.getMessage());
-                // Puedes mostrar un mensaje al usuario indicando un formato incorrecto
-            }
+            vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItemPosition(), binding.spnHorarios.getSelectedItemPosition(), binding.etdFecha.getText().toString(), binding.btnConfirmarCita.getText().toString());
         });
 
         binding.etdFecha.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d("debug", "click on date input");
-                    vm.onDateInputClicked(); // Notifica al ViewModel que se hizo clic
-                    return true;
-                }
-                return false;
+                return vm.fechaClickeada(event);
             }
         });
 
@@ -189,6 +204,9 @@ public class TurnoFragment extends Fragment {
         return root;
     }
 
+    public void mostrarToast(String mensaje){
+        Toast.makeText(getContext(), mensaje, Toast.LENGTH_LONG).show();
+    }
 
     private void limpiarCampos() {
         binding.etDNIPaciente.setText("");
@@ -199,28 +217,24 @@ public class TurnoFragment extends Fragment {
         binding.spnTipoDeVacuna.setSelection(0);
     }
 
-    // Método para mostrar el DatePickerDialog
-    private void showDatePicker(long initialDateMillis) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(initialDateMillis);
-        int currentYear = calendar.get(Calendar.YEAR);
-        int currentMonth = calendar.get(Calendar.MONTH);
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+    private void mostrarFechaSelecionada(long fechaSeleccionada) {
+        Calendar fecha = Calendar.getInstance();
+        fecha.setTimeInMillis(fechaSeleccionada);
+        int anioElegido = fecha.get(Calendar.YEAR);
+        int mesElegido = fecha.get(Calendar.MONTH);
+        int diaElegido = fecha.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                requireContext(), // Usa el Context válido del Fragment
+                requireContext(),
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        // Maneja la fecha seleccionada
-                        Log.d("debug", "Fecha seleccionada: " + dayOfMonth + "/" + (month + 1) + "/" + year);
-                        // Notifica al ViewModel la fecha seleccionada
-                        vm.onDateSelected(year, month, dayOfMonth);
+                    public void onDateSet(DatePicker view, int anio, int mes, int dia) {
+                        vm.fechaSeleccionada(anio, mes, dia);
                     }
                 },
-                currentYear, // Año inicial
-                currentMonth, // Mes inicial (0-indexed)
-                currentDay // Día inicial
+                anioElegido,
+                mesElegido,
+                diaElegido
         );
         datePickerDialog.show();
     }
@@ -228,38 +242,7 @@ public class TurnoFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && data != null) {
-            String datosEscaneados = data.getStringExtra("DATOS_ESCANEADOS");
-            Log.d("ScanResult", "Datos escaneados: " + datosEscaneados);
-
-            if (datosEscaneados != null) {
-                String[] partes = datosEscaneados.split("@");
-
-                // Asegurarse de que se tengan al menos 5 partes según tu formato de DNI
-                if (partes.length >= 5) {
-                    String dniEscaneado = partes[4];
-                    Log.d("ScanResult", "DNI escaneado: " + dniEscaneado);
-
-                    // **¡Aquí está la lógica clave!**
-                    if (requestCode == REQUEST_CODE_SCAN_PACIENTE_DNI) {
-                        // Podrías llamar a tu lógica para buscar el paciente por DNI aquí si necesitas validarlo inmediatamente
-                        vm.buscarDNIPaciente(dniEscaneado);
-
-                    } else if (requestCode == REQUEST_CODE_SCAN_TUTOR_DNI) {
-                        // Podrías llamar a tu lógica para buscar el tutor por DNI aquí
-                        vm.buscarDNITutor(dniEscaneado);
-
-                    }
-                } else {
-                    Toast.makeText(getContext(), "Formato del código de barras inválido", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else if (resultCode == RESULT_CANCELED) {
-            // Manejar el caso en que el usuario cancela el escaneo si es necesario
-            Log.d("ScanResult", "Escaneo cancelado");
-        }
-        // Puedes agregar más else if para otros requestCodes si los tienes
+        vm.cargarImagen(requestCode, resultCode, data);
     }
 
     @Override

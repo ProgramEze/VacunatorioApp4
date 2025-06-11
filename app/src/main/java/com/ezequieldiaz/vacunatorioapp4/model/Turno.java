@@ -1,5 +1,7 @@
 package com.ezequieldiaz.vacunatorioapp4.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -8,14 +10,19 @@ public class Turno implements Serializable {
     private int pacienteId;
     private int tipoDeVacunaId;
     private int tutorId;
-    private int agenteId;
+    private String agenteId;
     private int aplicacionId;
     private String cita;
     private String relacionTutor;
+    private Paciente paciente;
+    private TipoDeVacuna tipoDeVacuna;
+    private Tutor tutor;
+    private Agente agente;
+    private Aplicacion aplicacion;
 
     public Turno() {}
 
-    public Turno(int id, int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, String cita, String relacionTutor) {
+    public Turno(int id, int pacienteId, int tipoDeVacunaId, int tutorId, String agenteId, int aplicacionId, String cita, String relacionTutor) {
         this.id = id;
         this.pacienteId = pacienteId;
         this.tipoDeVacunaId = tipoDeVacunaId;
@@ -26,7 +33,7 @@ public class Turno implements Serializable {
         this.relacionTutor = relacionTutor;
     }
 
-    public Turno(int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, String cita, String relacionTutor) {
+    public Turno(int pacienteId, int tipoDeVacunaId, int tutorId, String agenteId, int aplicacionId, String cita, String relacionTutor) {
         this.pacienteId = pacienteId;
         this.tipoDeVacunaId = tipoDeVacunaId;
         this.tutorId = tutorId;
@@ -68,11 +75,11 @@ public class Turno implements Serializable {
         this.tutorId = tutorId;
     }
 
-    public int getAgenteId() {
+    public String getAgenteId() {
         return agenteId;
     }
 
-    public void setAgenteId(int agenteId) {
+    public void setAgenteId(String agenteId) {
         this.agenteId = agenteId;
     }
 
@@ -98,5 +105,51 @@ public class Turno implements Serializable {
 
     public void setRelacionTutor(String relacionTutor) {
         this.relacionTutor = relacionTutor;
+    }
+
+    public Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
+    }
+
+    public TipoDeVacuna getTipoDeVacuna() {
+        return tipoDeVacuna;
+    }
+
+    public void setTipoDeVacuna(TipoDeVacuna tipoDeVacuna) {
+        this.tipoDeVacuna = tipoDeVacuna;
+    }
+
+    public Tutor getTutor() {
+        return tutor;
+    }
+
+    public void setTutor(Tutor tutor) {
+        this.tutor = tutor;
+    }
+
+    public Agente getAgente() {
+        return agente;
+    }
+
+    public void setAgente(Agente agente) {
+        this.agente = agente;
+    }
+
+    public Aplicacion getAplicacion() {
+        return aplicacion;
+    }
+
+    public void setAplicacion(Aplicacion aplicacion) {
+        this.aplicacion = aplicacion;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Turno: " + id + " - Paciente: " + pacienteId + " - Tipo de Vacuna: " + tipoDeVacunaId + " - Tutor: " + tutorId + " - Agente: " + agenteId + " - Aplicación: " + aplicacionId + " - Cita: " + cita + " - Relación Tutor: " + relacionTutor;
     }
 }

@@ -16,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.ezequieldiaz.vacunatorioapp4.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getApplication().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String nombre = sharedPreferences.getString("nombre completo", "example");
         String matricula = sharedPreferences.getString("matricula", "00000000");
+        AndroidThreeTen.init(this);
+
 
         // Actualizar el encabezado del NavigationView
         View headerView = navigationView.getHeaderView(0);

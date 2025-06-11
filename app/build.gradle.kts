@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.fragment)
+    implementation(libs.places)
+    implementation(libs.threetenabp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

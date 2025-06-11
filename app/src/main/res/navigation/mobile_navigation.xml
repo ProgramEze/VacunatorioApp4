@@ -80,7 +80,7 @@
         android:id="@+id/nav_turno"
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.turno.TurnoFragment"
         android:label="@string/menu_turno"
-        tools:layout="@layout/fragment_agregar_turno">
+        tools:layout="@layout/fragment_turno">
         <action
             android:id="@+id/action_nav_turno_to_nav_home"
             app:destination="@id/nav_home" />

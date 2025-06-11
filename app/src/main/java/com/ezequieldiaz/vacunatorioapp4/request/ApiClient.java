@@ -5,21 +5,16 @@ import android.content.SharedPreferences;
 
 import com.ezequieldiaz.vacunatorioapp4.model.Agente;
 import com.ezequieldiaz.vacunatorioapp4.model.Aplicacion;
-import com.ezequieldiaz.vacunatorioapp4.model.Genero;
 import com.ezequieldiaz.vacunatorioapp4.model.Laboratorio;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
-import com.ezequieldiaz.vacunatorioapp4.model.RelacionTutor;
 import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
 import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -31,6 +26,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public class ApiClient {
     public static final String URL = "http://192.168.1.13:5000/";
@@ -119,6 +115,13 @@ public class ApiClient {
         @GET("turnos/{id}")
         Call<Turno> getTurno(@Header("Authorization") String token, @Path("id") int id);
 
+        @GET("turnos/porfecha")
+        Call<Turno> obtenerTurnoPorFecha(
+                @Header("Authorization") String token,
+                @Query("fecha") String fecha
+        );
+
+
         @FormUrlEncoded
         @POST("turnos")
         Call<Turno> registrarTurno(
@@ -134,15 +137,15 @@ public class ApiClient {
 
         @FormUrlEncoded
         @PUT("turnos/{id}")
-        Call<Void> modificarTurno(
+        Call<Turno> modificarTurno(
                 @Header("Authorization") String token,
                 @Field("PacienteId") int pacienteId,
                 @Field("TipoDeVacunaId") int tipoDeVacunaId,
                 @Field("TutorId") int tutorId,
-                @Field("AgenteId") int agenteId,
+                @Field("AgenteId") String agenteId,
                 @Field("AplicacionId") int aplicacionId,
-                @Field("Cita") LocalDate cita,
-                @Field("RelacionTutor") RelacionTutor relacionTutor
+                @Field("Cita") String cita,
+                @Field("RelacionTutor") String relacionTutor
         );
 
         @FormUrlEncoded
