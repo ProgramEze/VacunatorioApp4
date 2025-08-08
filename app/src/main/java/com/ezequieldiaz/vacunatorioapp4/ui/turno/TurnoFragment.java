@@ -107,10 +107,29 @@ public class TurnoFragment extends Fragment {
             }
         });
 
+        // Observador para el paciente
+        vm.getMPaciente().observe(getViewLifecycleOwner(), paciente -> {
+            if (paciente != null && vm.getMTutor().getValue() != null && binding.btnConfirmarCita.getText().toString().equalsIgnoreCase("Otorgar turno")) {
+                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.spnHorarios.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarCita.getText().toString());
+            }
+        });
+
+        // Observador para el tutor
+        vm.getMTutor().observe(getViewLifecycleOwner(), tutor -> {
+            if (tutor != null && vm.getMPaciente().getValue() != null && binding.btnConfirmarCita.getText().toString().equalsIgnoreCase("Otorgar turno")) {
+                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.spnHorarios.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarCita.getText().toString());
+            }
+        });
+
+
         vm.getMPaciente().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(Paciente p) {
-                binding.etDNIPaciente.setText(p.getDni());
+                if(p != null){
+                    binding.etDNIPaciente.setText(p.getDni());
+                } else {
+                    binding.etDNIPaciente.setText("");
+                }
             }
         });
 
@@ -119,15 +138,26 @@ public class TurnoFragment extends Fragment {
             public void onChanged(Turno turno) {
                 binding.etDNIPaciente.setText(turno.getPaciente().getDni());
                 binding.etDNITutor.setText(turno.getTutor().getDni());
-                binding.spnTipoDeVacuna.setSelection(turno.getTipoDeVacuna().getId()-1);
-                binding.spnRelacionTutor.setSelection(vm.cargarTutor(turno.getRelacionTutor()));
+                binding.spnTipoDeVacuna.setSelection(turno.getTipoDeVacuna().getId() - 1);
+
+                String relacion = turno.getRelacionTutor();
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.spnRelacionTutor.getAdapter();
+                int pos = adapter.getPosition(relacion);
+                if (pos >= 0) {
+                    binding.spnRelacionTutor.setSelection(pos);
+                }
             }
         });
+
 
         vm.getMTutor().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(Tutor t) {
-                binding.etDNITutor.setText(t.getDni());
+                if(t != null){
+                    binding.etDNITutor.setText(t.getDni());
+                } else {
+                    binding.etDNITutor.setText("");
+                }
             }
         });
 
@@ -180,17 +210,33 @@ public class TurnoFragment extends Fragment {
                 binding.etDNITutor.setText("");
                 binding.spnTipoDeVacuna.setSelection(0);
                 binding.spnRelacionTutor.setSelection(0);
-                vm.cargarTurno(LocalDateTime.of(LocalDate.parse(binding.etdFecha.getText().toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())), LocalTime.parse(binding.spnHorarios.getSelectedItem().toString(), DateTimeFormatter.ofPattern("HH:mm"+":00", Locale.getDefault()))).toString());
+                // Crear LocalDateTime desde la fecha y hora elegidas
+                LocalDateTime cita = LocalDateTime.of(
+                        LocalDate.parse(binding.etdFecha.getText().toString(),
+                                DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())),
+                        LocalTime.parse(binding.spnHorarios.getSelectedItem().toString() + ":00",
+                                DateTimeFormatter.ofPattern("HH:mm:ss", Locale.getDefault()))
+                );
+
+                String citaFormateada = cita.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+                //Log.d("cargarTurno", cita.toString());
+                vm.cargarTurno(citaFormateada);
             }catch (DateTimeParseException e) {
-                mostrarToast("Error al parsear fecha u hora");
+                Log.d("cargar", e.getMessage());
+                mostrarToast("Seleccione una fecha y una hora para la cita");
             }
         });
 
         binding.btnConfirmarCita.setOnClickListener(v -> {
-            vm.buscarDNITutor(binding.etDNITutor.getText().toString());
-            vm.buscarDNIPaciente(binding.etDNIPaciente.getText().toString());
-            vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItemPosition(), binding.spnHorarios.getSelectedItemPosition(), binding.etdFecha.getText().toString(), binding.btnConfirmarCita.getText().toString());
+            if(binding.btnConfirmarCita.getText().toString().equalsIgnoreCase("Otorgar turno")){
+                vm.buscarDNIPaciente(binding.etDNIPaciente.getText().toString());
+                vm.buscarDNITutor(binding.etDNITutor.getText().toString());
+            } else {
+                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.spnHorarios.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarCita.getText().toString());
+            }
         });
+
 
         binding.etdFecha.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -215,6 +261,7 @@ public class TurnoFragment extends Fragment {
         binding.spnRelacionTutor.setSelection(0);
         binding.spnHorarios.setSelection(0);
         binding.spnTipoDeVacuna.setSelection(0);
+        vm.limpiarMutables();
     }
 
     private void mostrarFechaSelecionada(long fechaSeleccionada) {

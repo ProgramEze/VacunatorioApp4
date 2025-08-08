@@ -16,10 +16,6 @@
             app:destination="@id/nav_perfil" />
 
         <action
-            android:id="@+id/action_nav_home_to_nav_cambiar_password"
-            app:destination="@id/nav_cambiar_password" />
-
-        <action
             android:id="@+id/action_nav_home_to_nav_agregar_paciente"
             app:destination="@id/nav_agregar_paciente" />
 

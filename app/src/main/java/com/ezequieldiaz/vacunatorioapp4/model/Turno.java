@@ -2,8 +2,9 @@ package com.ezequieldiaz.vacunatorioapp4.model;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class Turno implements Serializable {
     private int id;

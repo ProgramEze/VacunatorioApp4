@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentAgregarPacienteBinding;
 import com.ezequieldiaz.vacunatorioapp4.model.Genero;
 
@@ -48,16 +49,32 @@ public class AgregarPacienteFragment extends Fragment {
             String nombre = binding.etNombre.getText().toString();
             String apellido = binding.etApellido.getText().toString();
             String dni = binding.etDNI.getText().toString();
-            String fechaNacimiento = String.valueOf(LocalDate.parse(binding.etFechaDeNacimiento.getText().toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            String fechaNacimientoTexto = binding.etFechaDeNacimiento.getText().toString();
             String genero = binding.spinnerGenero.getSelectedItem().toString();
-            if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || fechaNacimiento == null
+
+            if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || fechaNacimientoTexto.isEmpty()
                     || genero.equals("Seleccione el género del paciente")) {
                 Toast.makeText(getContext(), "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            viewModel.guardarPaciente(nombre, apellido, dni, fechaNacimiento, genero);
+            if (!dni.matches("\\d{7,8}")) {
+                Toast.makeText(getContext(), "DNI inválido", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Si llegamos acá, ya sabemos que la fecha no está vacía. Ahora la parseamos:
+            LocalDate fechaNacimiento;
+            try {
+                fechaNacimiento = LocalDate.parse(fechaNacimientoTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Fecha inválida. Formato esperado: dd/MM/yyyy", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            viewModel.guardarPaciente(nombre, apellido, dni, fechaNacimiento.toString(), genero);
         });
+
 
         binding.btnCancelar.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
 
@@ -72,23 +89,37 @@ public class AgregarPacienteFragment extends Fragment {
     }
 
     private void configurarSpinnerGenero() {
+        String[] generos = getResources().getStringArray(R.array.genero_array);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
-                getResources().getStringArray(com.ezequieldiaz.vacunatorioapp4.R.array.genero_array)
-        );
+                R.layout.spinner_item_genero,  // el layout que creaste
+                generos
+        ) {
+            @Override
+            public boolean isEnabled(int position) {
+                // El primer ítem ("Seleccione...") no se puede seleccionar
+                return position != 0;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if (position == 0) {
+                    tv.setTextColor(Color.GRAY); // Placeholder en gris
+                } else {
+                    tv.setTextColor(Color.BLACK); // Normal en negro
+                }
+                return view;
+            }
+        };
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerGenero.setAdapter(adapter);
-
-        binding.spinnerGenero.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.GRAY);
-                }
-            }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
-        });
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

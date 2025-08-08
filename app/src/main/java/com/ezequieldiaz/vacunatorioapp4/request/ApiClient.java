@@ -29,7 +29,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public class ApiClient {
-    public static final String URL = "http://192.168.1.13:5000/";
+    public static final String URL = "http://192.168.1.3:5000/";
     private static MisEndPoints mep;
 
     public static MisEndPoints getEndPoints(){
@@ -139,6 +139,7 @@ public class ApiClient {
         @PUT("turnos/{id}")
         Call<Turno> modificarTurno(
                 @Header("Authorization") String token,
+                @Path("id") int id,
                 @Field("PacienteId") int pacienteId,
                 @Field("TipoDeVacunaId") int tipoDeVacunaId,
                 @Field("TutorId") int tutorId,

@@ -17,6 +17,7 @@
         android:drawableStart="@drawable/ic_barcode_scanner"
         android:text="@string/escanear_codigo"
         android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" /> <!-- Icono de código de barras -->
 
@@ -31,6 +32,7 @@
         android:inputType="text"
         android:maxLines="1"
         android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnEscanear" />
 
@@ -44,6 +46,7 @@
         android:inputType="text"
         android:maxLines="1"
         android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etNombre" />
 
@@ -57,6 +60,7 @@
         android:inputType="number"
         android:maxLines="1"
         android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etApellido" />
 
@@ -70,6 +74,7 @@
         android:inputType="date"
         android:maxLines="1"
         android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etDNI" />
 
@@ -80,6 +85,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/edittext_background"
         android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etFechaDeNacimiento" />
 
@@ -103,11 +109,9 @@
 
     <Button
         android:id="@+id/btnCancelar"
-        android:layout_width="389dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="6dp"
-        android:layout_marginEnd="6dp"
         android:layout_marginBottom="239dp"
         android:backgroundTint="@color/secondary_color"
         android:drawableStart="@drawable/ic_cancel"
