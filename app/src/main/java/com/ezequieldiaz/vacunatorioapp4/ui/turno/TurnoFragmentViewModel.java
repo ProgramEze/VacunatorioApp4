@@ -53,9 +53,9 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<Tutor> mTutor;
     private MutableLiveData<Boolean> mLimpiar;
     private MutableLiveData<String> mMensaje;
+    private MutableLiveData<Boolean> mCancelarYConfirmar;
     private SharedPreferences sharedPreferences;
 
-    // LiveData para señalizar al Fragment que muestre el DatePickerDialog
     private SingleLiveEvent<Long> mShowDatePickerEvent;
 
     public TurnoFragmentViewModel(@NonNull Application application) {
@@ -125,11 +125,18 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         return mLimpiar;
     }
 
-    public LiveData<String> getMensaje() {
+    public LiveData<String> getMMensaje() {
         if (mMensaje == null) {
             mMensaje = new MutableLiveData<>();
         }
         return mMensaje;
+    }
+
+    public LiveData<Boolean> getmCancelarYConfirmar(){
+        if(mCancelarYConfirmar == null){
+            mCancelarYConfirmar = new MutableLiveData<>();
+        }
+        return mCancelarYConfirmar;
     }
 
     public SingleLiveEvent<Long> getShowDatePickerEvent() {
@@ -243,27 +250,49 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         cargarHorarios();
     }
 
-    public void cargarTurno(String fecha){
+    public void cargarTurno(String fecha) {
         ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
         String token = ApiClient.leerToken(getApplication());
         Call<Turno> call = apiService.obtenerTurnoPorFecha(token, fecha);
+
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Turno> call, Response<Turno> response) {
-                mConfirmar.setValue("Modificar turno");
-                Log.d("cargar", response.body().toString());
-                mTurno.setValue(response.body());
-                mPaciente.setValue(response.body().getPaciente());
-                mTutor.setValue(response.body().getTutor());
+                Log.d("turno", "Código HTTP: " + response.code());
+
+                if (response.isSuccessful() && response.body() != null) {
+                    mConfirmar.setValue("Modificar turno");
+                    mTurno.setValue(response.body());
+                    mPaciente.setValue(response.body().getPaciente());
+                    mTutor.setValue(response.body().getTutor());
+                    mCancelarYConfirmar.setValue(true);
+                } else {
+                    try {
+                        // Si hay mensaje de error del backend
+                        String errorMsg = response.errorBody() != null
+                                ? response.errorBody().string()
+                                : "Error desconocido";
+
+                        Log.e("turno", "Error del backend: " + errorMsg);
+                        mMensaje.setValue(errorMsg);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        mMensaje.setValue("Error al procesar la respuesta del servidor");
+                    }
+                    mCancelarYConfirmar.setValue(false);
+                }
             }
 
             @Override
             public void onFailure(Call<Turno> call, Throwable throwable) {
-                Log.d("salida", throwable.getMessage());
-                mMensaje.setValue("Error al obtener el turno");
+                Log.e("turno", "Fallo de red o conversión", throwable);
+                mMensaje.setValue("Error de conexión: " + throwable.getMessage());
+                mCancelarYConfirmar.setValue(false);
             }
         });
     }
+
 
     public boolean fechaClickeada(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -377,6 +406,9 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     public void limpiarMutables(){
         mPaciente.setValue(null);
         mTutor.setValue(null);
+        mTurno.setValue(null);
+        mConfirmar.setValue("Otorgar turno");
+        mCancelarYConfirmar.setValue(false);
     }
 
     public void guardarTurno(TipoDeVacuna tDV, String rT, String hor, String fecha, String boton) {
@@ -398,6 +430,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             sharedPreferences = getApplication().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
             String matricula = sharedPreferences.getString("matricula", "00000000");
             Turno turno = new Turno();
+            turno.setId(mTurno.getValue().getId());
             turno.setPacienteId(mPaciente.getValue().getId());
             turno.setTipoDeVacunaId(tDV.getId());
             turno.setTutorId(mTutor.getValue().getId());
@@ -459,6 +492,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
                     Log.d("turno", "Turno modificado");
                     Turno turnoViejo = mTurno.getValue();
                     Log.d("turno cargado", turnoViejo.toString());
+                    turnoViejo.setId(mTurno.getValue().getId());
                     turnoViejo.setPacienteId(mPaciente.getValue().getId());
                     turnoViejo.setTipoDeVacunaId(turno.getTipoDeVacunaId());
                     turnoViejo.setTutorId(mTutor.getValue().getId());
@@ -512,6 +546,61 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mMensaje.setValue("Los campos DNI de paciente y tutor son obligatorios");
         }  catch (NullPointerException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void cancelarTurno() {
+        String token = ApiClient.leerToken(getApplication());
+        ApiClient.MisEndPoints api = ApiClient.getEndPoints();
+        if (token != null) {
+            Call<Void> call = api.cancelarTurno(token, mTurno.getValue().getId());
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        mMensaje.setValue("Turno cancelado correctamente");
+                        mCancelarYConfirmar.setValue(false); // Ocultar el botón
+                        Log.d("cancelar", "Turno cancelado correctamente");
+                        mLimpiar.setValue(true);
+                    } else {
+                        mMensaje.setValue("No se pudo cancelar el turno");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable throwable) {
+                    mMensaje.setValue("Error: " + throwable.getMessage());
+                    Log.d("cancelar", "Falla: " + throwable.getMessage());
+                }
+            });
+        }
+    }
+
+    public void confirmarAplicacion(){
+        String token = ApiClient.leerToken(getApplication());
+        ApiClient.MisEndPoints api = ApiClient.getEndPoints();
+        if (token != null) {
+            Call<Void> call = api.confirmarAplicacion(token, mTurno.getValue().getAplicacionId());
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        mMensaje.setValue("Vacuna aplicada correctamente");
+                        mCancelarYConfirmar.setValue(false); // Ocultar el botón
+                        Log.d("confirmar", "Vacuna aplicada correctamente");
+                        mLimpiar.setValue(true);
+                    } else {
+                        mMensaje.setValue(response.toString());
+                        Log.d("confirmar", response.body().toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable throwable) {
+                    mMensaje.setValue("Error: " + throwable.getMessage());
+                    Log.d("confirmar", "Falla: " + throwable.getMessage());
+                }
+            });
         }
     }
 }

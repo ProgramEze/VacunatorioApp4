@@ -73,8 +73,8 @@ public class ApiClient {
         @GET("Aplicaciones")
         Call<List<Aplicacion>> getAplicaciones(@Header("Authorization") String token);
 
-        @GET("Aplicaciones/{id}")
-        Call<Tutor> getAplicacion(@Header("Authorization") String token, @Path("id") int id);
+        @PUT("Aplicaciones/{id}")
+        Call<Void> confirmarAplicacion(@Header("Authorization") String token, @Path("id") int id);
 
         @FormUrlEncoded
         @PUT("Aplicaciones/{id}")
@@ -149,9 +149,12 @@ public class ApiClient {
                 @Field("RelacionTutor") String relacionTutor
         );
 
-        @FormUrlEncoded
         @PUT("turnos/cancelarturno/{id}")
-        Call<Turno> cancelarTurno(@Header("Authorization") String token, @Path("id") int id);
+        Call<Void> cancelarTurno(
+                @Header("Authorization") String token,
+                @Path("id") int id
+        );
+
 
         @GET("TipoDeVacunas")
         Call<List<TipoDeVacuna>> getTiposDeVacunas(@Header("Authorization") String token);

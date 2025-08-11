@@ -1,5 +1,7 @@
 package com.ezequieldiaz.vacunatorioapp4.ui.turno;
 
+import static android.view.View.GONE;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -136,15 +138,16 @@ public class TurnoFragment extends Fragment {
         vm.getMTurno().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(Turno turno) {
-                binding.etDNIPaciente.setText(turno.getPaciente().getDni());
-                binding.etDNITutor.setText(turno.getTutor().getDni());
-                binding.spnTipoDeVacuna.setSelection(turno.getTipoDeVacuna().getId() - 1);
-
-                String relacion = turno.getRelacionTutor();
-                ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.spnRelacionTutor.getAdapter();
-                int pos = adapter.getPosition(relacion);
-                if (pos >= 0) {
-                    binding.spnRelacionTutor.setSelection(pos);
+                if(turno != null){
+                    binding.etDNIPaciente.setText(turno.getPaciente().getDni());
+                    binding.etDNITutor.setText(turno.getTutor().getDni());
+                    binding.spnTipoDeVacuna.setSelection(turno.getTipoDeVacuna().getId());
+                    String relacion = turno.getRelacionTutor();
+                    ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.spnRelacionTutor.getAdapter();
+                    int pos = adapter.getPosition(relacion);
+                    if (pos >= 0) {
+                        binding.spnRelacionTutor.setSelection(pos);
+                    }
                 }
             }
         });
@@ -168,7 +171,7 @@ public class TurnoFragment extends Fragment {
             }
         });
 
-        vm.getMensaje().observe(getViewLifecycleOwner(), new Observer<>() {
+        vm.getMMensaje().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(String msj) {
                 mostrarToast(msj);
@@ -179,6 +182,18 @@ public class TurnoFragment extends Fragment {
             @Override
             public void onChanged(String s) {
                 binding.btnConfirmarCita.setText(s);
+            }
+        });
+
+        vm.getmCancelarYConfirmar().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean mostrar) {
+                binding.btnCancelarTurno.setVisibility(
+                        mostrar != null && mostrar ? View.VISIBLE : View.GONE
+                );
+                binding.btnConfirmarAplicacion.setVisibility(
+                        mostrar != null && mostrar ? View.VISIBLE : View.GONE
+                );
             }
         });
 
@@ -237,11 +252,24 @@ public class TurnoFragment extends Fragment {
             }
         });
 
-
         binding.etdFecha.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return vm.fechaClickeada(event);
+            }
+        });
+
+        binding.btnCancelarTurno.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vm.cancelarTurno();
+            }
+        });
+
+        binding.btnConfirmarAplicacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vm.confirmarAplicacion();
             }
         });
 
