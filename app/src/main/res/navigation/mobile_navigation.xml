@@ -24,10 +24,6 @@
             app:destination="@id/nav_turno" />
 
         <action
-            android:id="@+id/action_nav_home_to_nav_aplicacion"
-            app:destination="@id/nav_aplicacion" />
-
-        <action
             android:id="@+id/action_nav_home_to_nav_deslogeo"
             app:destination="@id/nav_deslogeo" />
     </fragment>
@@ -79,16 +75,6 @@
         tools:layout="@layout/fragment_turno">
         <action
             android:id="@+id/action_nav_turno_to_nav_home"
-            app:destination="@id/nav_home" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_aplicacion"
-        android:name="com.ezequieldiaz.vacunatorioapp4.ui.aplicacion.AplicacionFragment"
-        android:label="@string/menu_aplicacion"
-        tools:layout="@layout/fragment_aplicacion">
-        <action
-            android:id="@+id/action_nav_aplicacion_to_nav_home"
             app:destination="@id/nav_home" />
     </fragment>
 

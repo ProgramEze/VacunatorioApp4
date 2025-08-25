@@ -21,7 +21,7 @@
             android:icon="@drawable/icon_registro"
             android:title="@string/menu_tutor" />
         <item
-            android:id="@+id/nav_agendar_turno"
+            android:id="@+id/nav_turno"
             android:icon="@drawable/icon_registro"
             android:title="@string/menu_turno" />
         <item

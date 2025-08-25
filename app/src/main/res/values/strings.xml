@@ -7,7 +7,7 @@
     <string name="nav_header_desc">Encabezado de la barra lateral</string>
     <string name="action_settings">Configuración</string>
 
-    <string name="menu_home">Home</string>
+    <string name="menu_home">Vista principal</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <!-- Strings related to login -->
@@ -43,7 +43,7 @@
     <string name="menu_cambiar_password">Cambiar contraseña</string>
     <string name="menu_paciente">Registrar pacientes</string>
     <string name="menu_tutor">Registrar tutores</string>
-    <string name="menu_turno">Registrar turnos</string>
+    <string name="menu_turno">Turnos</string>
     <string name="menu_aplicacion">Aplicaciones</string>
     <string name="menu_deslogeo">Desloguearse</string>
     <string-array name="genero_array">

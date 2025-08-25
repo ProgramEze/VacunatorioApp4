@@ -25,7 +25,6 @@ public class PerfilFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<Agente> mAgente;
     private MutableLiveData<String> mGuardar;
     private MutableLiveData<Boolean> mHabilitar;
-    private MutableLiveData<Integer> mVisible;
 
     public PerfilFragmentViewModel(@NonNull Application application) {
         super(application);

@@ -87,6 +87,12 @@ public class PerfilFragment extends Fragment {
                 Navigation.findNavController(v).navigate(R.id.nav_cambiar_password, null);
             }
         });
+        binding.btnRegresar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.nav_home, null);
+            }
+        });
         vm.miPerfil();
         return root;
     }

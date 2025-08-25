@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
+import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentCambiarPasswordBinding;
 
 public class CambiarPasswordFragment extends Fragment {
@@ -24,6 +26,12 @@ public class CambiarPasswordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 vm.cambiarPassword(binding.etViejaPassword.getText().toString(), binding.etNuevaPassword.getText().toString(), binding.etRepetirNuevaPassword.getText().toString(), getView());
+            }
+        });
+        binding.btnRegresar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.nav_perfil);
             }
         });
         return root;

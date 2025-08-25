@@ -47,13 +47,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        binding.btnAplicacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewModel.irAFragment(new HomeFragmentViewModel.Navegacion(R.id.nav_aplicacion, null));
-            }
-        });
-
         binding.btnPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
