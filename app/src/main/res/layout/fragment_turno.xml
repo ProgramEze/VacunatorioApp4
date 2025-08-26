@@ -47,10 +47,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColorHint="@color/black"
+        android:spinnerMode="dialog"
+        android:theme="@style/MySpinnerDialogTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilDNIPaciente" />
+
+
 
     <!-- DNI Tutor -->
     <com.google.android.material.textfield.TextInputLayout
@@ -92,7 +95,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:spinnerMode="dialog"
         android:textColorHint="@color/black"
+        android:theme="@style/MySpinnerDialogTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilDNITutor" />
@@ -126,8 +131,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:spinnerMode="dialog"
+        android:theme="@style/MySpinnerDialogTheme"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilFecha" />
 
     <!-- Botones -->

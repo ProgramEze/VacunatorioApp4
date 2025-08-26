@@ -26,4 +26,9 @@
     <!-- AppBarOverlay y PopupOverlay (obligatorios para layouts predeterminados) -->
     <style name="Theme.VacunatorioApp4.AppBarOverlay" parent="ThemeOverlay.Material3.ActionBar"/>
     <style name="Theme.VacunatorioApp4.PopupOverlay" parent="ThemeOverlay.Material3.MaterialAlertDialog"/>
+    <style name="MySpinnerDialogTheme" parent="ThemeOverlay.Material3.Light">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
 </resources>

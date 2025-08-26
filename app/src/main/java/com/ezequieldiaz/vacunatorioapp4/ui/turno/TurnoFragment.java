@@ -54,7 +54,7 @@ public class TurnoFragment extends Fragment {
             public void onChanged(List<TipoDeVacuna> tiposDeVacuna) {
                     ArrayAdapter<TipoDeVacuna> adapter = new ArrayAdapter<>(
                             requireContext(),
-                            R.layout.spinner_item,
+                            R.layout.spinner_item_dialog,
                             tiposDeVacuna
                     ) {
                         @Override
@@ -63,7 +63,7 @@ public class TurnoFragment extends Fragment {
                         }
                     };
 
-                    adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+                    adapter.setDropDownViewResource(R.layout.spinner_item_dialog);
                     binding.spnTipoDeVacuna.setAdapter(adapter);
             }
         });
@@ -71,13 +71,13 @@ public class TurnoFragment extends Fragment {
         vm.getMRelaciones().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<String> relaciones) {
-                ArrayAdapter<String> relacionAdapter = new ArrayAdapter<>(requireContext(),R.layout.spinner_item, relaciones){
+                ArrayAdapter<String> relacionAdapter = new ArrayAdapter<>(requireContext(),R.layout.spinner_item_dialog, relaciones){
                     @Override
                     public boolean isEnabled(int position) {
                         return position != 0;
                     }
                 };
-                relacionAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+                relacionAdapter.setDropDownViewResource(R.layout.spinner_item_dialog);
                 binding.spnRelacionTutor.setAdapter(relacionAdapter);
             }
         });
@@ -85,13 +85,13 @@ public class TurnoFragment extends Fragment {
         vm.getMHorarios().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<String> horarios) {
-                ArrayAdapter<String> horarioAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, horarios){
+                ArrayAdapter<String> horarioAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item_dialog, horarios){
                     @Override
                     public boolean isEnabled(int position) {
                         return position != 0;
                     }
                 };
-                horarioAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+                horarioAdapter.setDropDownViewResource(R.layout.spinner_item_dialog);
                 binding.spnHorarios.setAdapter(horarioAdapter);
             }
         });
