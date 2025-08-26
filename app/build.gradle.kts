@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.places)
     implementation(libs.threetenabp)
+    implementation(libs.google.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -25,7 +25,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/border"
         android:hint="@string/matricula"
-        android:textColorHint="@color/colorSecondaryText"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_logo">
@@ -47,7 +47,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/border"
         android:hint="@string/contrasenia"
-        android:textColorHint="@color/colorSecondaryText"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/matricula_input_layout">
@@ -91,9 +91,11 @@
         android:layout_width="wrap_content"
         android:layout_height="112dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="332dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_fingerprint"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_cambiar_password" />

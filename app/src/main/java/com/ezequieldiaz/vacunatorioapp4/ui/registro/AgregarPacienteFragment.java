@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentAgregarPacienteBinding;
-import com.ezequieldiaz.vacunatorioapp4.model.Genero;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

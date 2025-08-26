@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentTurnoBinding;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
 import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
@@ -53,7 +54,7 @@ public class TurnoFragment extends Fragment {
             public void onChanged(List<TipoDeVacuna> tiposDeVacuna) {
                     ArrayAdapter<TipoDeVacuna> adapter = new ArrayAdapter<>(
                             requireContext(),
-                            android.R.layout.simple_spinner_item,
+                            R.layout.spinner_item,
                             tiposDeVacuna
                     ) {
                         @Override
@@ -62,7 +63,7 @@ public class TurnoFragment extends Fragment {
                         }
                     };
 
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                     binding.spnTipoDeVacuna.setAdapter(adapter);
             }
         });
@@ -70,13 +71,13 @@ public class TurnoFragment extends Fragment {
         vm.getMRelaciones().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<String> relaciones) {
-                ArrayAdapter<String> relacionAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, relaciones){
+                ArrayAdapter<String> relacionAdapter = new ArrayAdapter<>(requireContext(),R.layout.spinner_item, relaciones){
                     @Override
                     public boolean isEnabled(int position) {
                         return position != 0;
                     }
                 };
-                relacionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                relacionAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                 binding.spnRelacionTutor.setAdapter(relacionAdapter);
             }
         });
@@ -84,13 +85,13 @@ public class TurnoFragment extends Fragment {
         vm.getMHorarios().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<String> horarios) {
-                ArrayAdapter<String> horarioAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, horarios){
+                ArrayAdapter<String> horarioAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, horarios){
                     @Override
                     public boolean isEnabled(int position) {
                         return position != 0;
                     }
                 };
-                horarioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                horarioAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                 binding.spnHorarios.setAdapter(horarioAdapter);
             }
         });
@@ -301,6 +302,7 @@ public class TurnoFragment extends Fragment {
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 requireContext(),
+                android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int anio, int mes, int dia) {
@@ -311,6 +313,7 @@ public class TurnoFragment extends Fragment {
                 mesElegido,
                 diaElegido
         );
+        datePickerDialog.getDatePicker().setCalendarViewShown(false);
         datePickerDialog.show();
     }
 

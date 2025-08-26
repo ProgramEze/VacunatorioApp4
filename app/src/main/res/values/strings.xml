@@ -30,7 +30,7 @@
     <string name="apellido">Apellido</string>
     <string name="dni">DNI</string>
     <string name="telefono">Teléfono</string>
-    <string name="fecha_de_nacimiento">Fecha de Nacimiento</string>
+    <string name="fecha_de_nacimiento">Fecha de nacimiento</string>
     <string name="genero">Género</string>
     <string name="email">Email</string>
     <string name="guardar">Guardar</string>
@@ -46,6 +46,7 @@
     <string name="menu_turno">Turnos</string>
     <string name="menu_aplicacion">Aplicaciones</string>
     <string name="menu_deslogeo">Desloguearse</string>
+    <string name="fingerprint">Ingrese la huella digital para ingresar en la aplicación</string>
     <string-array name="genero_array">
         <item>Seleccione el género del paciente</item>
         <item>Masculino</item>

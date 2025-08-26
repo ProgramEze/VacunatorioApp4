@@ -14,71 +14,103 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:backgroundTint="@color/primary_color"
+        android:backgroundTint="?attr/colorPrimary"
         android:drawableStart="@drawable/ic_barcode_scanner"
         android:text="@string/escanear_codigo"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" /> <!-- Icono de código de barras -->
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Campos para mostrar los datos escaneados -->
-    <EditText
-        android:id="@+id/etNombre"
+    <!-- Nombre -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/nombre_input_layout"
+        style="@style/Widget.VacunatorioApp4.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/edittext_background"
         android:hint="@string/nombre"
-        android:inputType="text"
-        android:maxLines="1"
-        android:padding="12dp"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnEscanear" />
+        app:layout_constraintTop_toBottomOf="@id/btnEscanear">
 
-    <EditText
-        android:id="@+id/etApellido"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textColor="@color/colorOnBackground"
+            android:textColorHint="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Apellido -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/apellido_input_layout"
+        style="@style/Widget.VacunatorioApp4.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/edittext_background"
         android:hint="@string/apellido"
-        android:inputType="text"
-        android:maxLines="1"
-        android:padding="12dp"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etNombre" />
+        app:layout_constraintTop_toBottomOf="@id/nombre_input_layout">
 
-    <EditText
-        android:id="@+id/etDNI"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etApellido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textColor="@color/colorOnBackground"
+            android:textColorHint="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- DNI -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dni_input_layout"
+        style="@style/Widget.VacunatorioApp4.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/edittext_background"
         android:hint="@string/dni"
-        android:inputType="number"
-        android:maxLines="1"
-        android:padding="12dp"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etApellido" />
+        app:layout_constraintTop_toBottomOf="@id/apellido_input_layout">
 
-    <EditText
-        android:id="@+id/etFechaDeNacimiento"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDNI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/colorOnBackground"
+            android:textColorHint="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Fecha de nacimiento -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/fecha_input_layout"
+        style="@style/Widget.VacunatorioApp4.TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/edittext_background"
         android:hint="@string/fecha_de_nacimiento"
-        android:inputType="date"
-        android:maxLines="1"
-        android:padding="12dp"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etDNI" />
+        app:layout_constraintTop_toBottomOf="@id/dni_input_layout">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etFechaDeNacimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Género -->
     <Spinner
         android:id="@+id/spinnerGenero"
         android:layout_width="match_parent"
@@ -88,23 +120,19 @@
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etFechaDeNacimiento" />
+        app:layout_constraintTop_toBottomOf="@id/fecha_input_layout" />
 
-
-    <!-- Botones para guardar o cancelar -->
-    <!-- Icono de guardar -->
-
+    <!-- Botones -->
     <Button
         android:id="@+id/btnGuardar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:backgroundTint="@color/primary_color"
+        android:backgroundTint="@color/colorPrimary"
         android:drawableStart="@drawable/ic_add"
         android:text="@string/guardar"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spinnerGenero" />
 
@@ -113,13 +141,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:backgroundTint="@color/secondary_color"
+        android:backgroundTint="@color/colorSecondary"
         android:drawableStart="@drawable/ic_cancel"
         android:text="@string/cancelar"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnGuardar" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

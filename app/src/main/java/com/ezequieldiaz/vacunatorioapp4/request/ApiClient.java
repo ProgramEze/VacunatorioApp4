@@ -43,7 +43,6 @@ public class ApiClient {
     }
 
     public interface MisEndPoints {
-        //Endpoints de Agente
         @FormUrlEncoded
         @POST("Agentes/login")
         Call<String> login(@Field("Matricula") String u, @Field("Clave") String c);
@@ -112,15 +111,11 @@ public class ApiClient {
             @Field("genero") String genero
         );
 
-        @GET("turnos/{id}")
-        Call<Turno> getTurno(@Header("Authorization") String token, @Path("id") int id);
-
         @GET("turnos/porfecha")
         Call<Turno> obtenerTurnoPorFecha(
                 @Header("Authorization") String token,
                 @Query("fecha") String fecha
         );
-
 
         @FormUrlEncoded
         @POST("turnos")

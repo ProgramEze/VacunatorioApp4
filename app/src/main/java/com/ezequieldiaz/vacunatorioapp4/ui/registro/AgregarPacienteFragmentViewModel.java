@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.ezequieldiaz.vacunatorioapp4.model.Genero;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
 import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
 
