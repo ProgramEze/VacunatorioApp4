@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.ezequieldiaz.vacunatorioapp4.model.Agente;
 import com.ezequieldiaz.vacunatorioapp4.model.Aplicacion;
+import com.ezequieldiaz.vacunatorioapp4.model.DisponibilidadResponse;
 import com.ezequieldiaz.vacunatorioapp4.model.Laboratorio;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
 import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
@@ -150,6 +151,11 @@ public class ApiClient {
                 @Path("id") int id
         );
 
+        @GET("turnos/disponibilidad/mes/{fecha}")
+        Call<List<DisponibilidadResponse>> getDisponibilidadDelMes(
+                @Header("Authorization") String token,
+                @Path("fecha") String fecha
+        );
 
         @GET("TipoDeVacunas")
         Call<List<TipoDeVacuna>> getTiposDeVacunas(@Header("Authorization") String token);

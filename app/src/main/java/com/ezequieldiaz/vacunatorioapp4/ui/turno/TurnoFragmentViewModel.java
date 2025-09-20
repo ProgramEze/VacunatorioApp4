@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -25,15 +26,21 @@ import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
 import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
 import com.ezequieldiaz.vacunatorioapp4.util.SingleLiveEvent;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalTime;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -47,6 +54,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<List<String>> mRelaciones;
     private MutableLiveData<String> mFecha;
     private MutableLiveData<List<String>> mHorarios;
+    private MutableLiveData<String> mFechaHora;
     private MutableLiveData<Turno> mTurno;
     private MutableLiveData<Paciente> mPaciente;
     private MutableLiveData<String> mConfirmar;
@@ -88,6 +96,13 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mHorarios = new MutableLiveData<>();
         }
         return mHorarios;
+    }
+
+    public LiveData<String> getMFechaHora() {
+        if (mFechaHora == null) {
+            mFechaHora = new MutableLiveData<>();
+        }
+        return mFechaHora;
     }
 
     public LiveData<Turno> getMTurno() {
@@ -293,6 +308,38 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         });
     }
 
+    public void seleccionarFechaHora(FragmentManager fm) {
+        // Abrir selector de fecha
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Selecciona la fecha")
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            LocalDate fecha = Instant.ofEpochMilli(selection)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            // Abrir selector de hora después de la fecha
+            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setTitleText("Selecciona la hora")
+                    .build();
+
+            timePicker.addOnPositiveButtonClickListener(v -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+
+                LocalDateTime fechaHora = fecha.atTime(hour, minute);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+                mFechaHora.setValue(fechaHora.format(formatter));
+            });
+
+            timePicker.show(fm, "TIME_PICKER");
+        });
+
+        datePicker.show(fm, "DATE_PICKER");
+    }
 
     public boolean fechaClickeada(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -603,4 +650,60 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             });
         }
     }
+
+    public void cargarHorariosLibres(String fechaSeleccionada) {
+        String token = ApiClient.leerToken(getApplication());
+        ApiClient.MisEndPoints api = ApiClient.getEndPoints();
+        if (token != null) {
+            Call<Void> call = api.confirmarAplicacion(token, mTurno.getValue().getAplicacionId());
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        mMensaje.setValue("Vacuna aplicada correctamente");
+                        mCancelarYConfirmar.setValue(false); // Ocultar el botón
+                        Log.d("confirmar", "Vacuna aplicada correctamente");
+                        mLimpiar.setValue(true);
+                    } else {
+                        mMensaje.setValue(response.toString());
+                        Log.d("confirmar", response.body().toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable throwable) {
+                    mMensaje.setValue("Error: " + throwable.getMessage());
+                    Log.d("confirmar", "Falla: " + throwable.getMessage());
+                }
+            });
+        }
+    }
+
+    /*private void cargarHorariosLibres(String fecha) {
+        ApiClient.getEndPoints().getDisponibilidadDia(fecha).enqueue(new Callback<List<DisponibilidadResponse>>() {
+            @Override
+            public void onResponse(Call<List<DisponibilidadResponse>> call, Response<List<DisponibilidadResponse>> response) {
+                if(response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    List<String> horarios = response.body().get(0).getHorariosLibres();
+                    if(horarios.isEmpty()){
+                        Toast.makeText(getContext(), "No hay horarios disponibles para esta fecha", Toast.LENGTH_SHORT).show();
+                        spnHorarios.setAdapter(null);
+                        return;
+                    }
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                            android.R.layout.simple_spinner_item, horarios);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spnHorarios.setAdapter(adapter);
+                } else {
+                    spnHorarios.setAdapter(null);
+                    Toast.makeText(getContext(), "No hay horarios disponibles para esta fecha", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DisponibilidadResponse>> call, Throwable t) {
+                Toast.makeText(getContext(), "Error al cargar horarios", Toast.LENGTH_SHORT).show();
+            }
+        });*/
 }

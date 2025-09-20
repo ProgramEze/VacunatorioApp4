@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.places)
     implementation(libs.threetenabp)
     implementation(libs.google.material)
+    implementation(libs.androidx.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

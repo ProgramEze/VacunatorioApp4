@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentTurnoBinding;
@@ -29,6 +30,7 @@ import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import org.threeten.bp.LocalDate;
@@ -39,6 +41,7 @@ import org.threeten.bp.format.DateTimeParseException;
 
 public class TurnoFragment extends Fragment {
     private TurnoFragmentViewModel vm;
+    private TurnoSharedViewModel svm;
     private FragmentTurnoBinding binding;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -48,7 +51,28 @@ public class TurnoFragment extends Fragment {
         View root = binding.getRoot();
 
         vm = new ViewModelProvider(this).get(TurnoFragmentViewModel.class);
+        svm = new ViewModelProvider(requireActivity()).get(TurnoSharedViewModel.class);
 
+        // Abrir disponibilidad
+        binding.btnSeleccionarFechaHora.setOnClickListener(v -> {
+            NavHostFragment.findNavController(TurnoFragment.this)
+                    .navigate(R.id.action_nav_turno_to_nav_disponibilidad);
+
+        });
+
+
+        // Observar cambios de fecha y hora seleccionados
+        svm.getFechaSeleccionada().observe(getViewLifecycleOwner(), fecha -> {
+            binding.etdFecha.setText(fecha);
+        });
+
+        svm.getHoraSeleccionada().observe(getViewLifecycleOwner(), hora -> {
+            ArrayAdapter<String> adapterHorarios = new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    Collections.singletonList(hora));
+            adapterHorarios.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.spnHorarios.setAdapter(adapterHorarios);
+        });
         vm.getMListaTipo().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(List<TipoDeVacuna> tiposDeVacuna) {
@@ -101,6 +125,10 @@ public class TurnoFragment extends Fragment {
             public void onChanged(String fecha) {
                 binding.etdFecha.setText(fecha);
             }
+        });
+
+        vm.getMFechaHora().observe(getViewLifecycleOwner(), fechaHora -> {
+            binding.etdFecha.setText(fechaHora);
         });
 
         vm.getShowDatePickerEvent().observe(getViewLifecycleOwner(), new Observer<>() {
@@ -196,6 +224,38 @@ public class TurnoFragment extends Fragment {
                         mostrar != null && mostrar ? View.VISIBLE : View.GONE
                 );
             }
+        });
+
+        binding.etdFecha.setOnClickListener(v -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    getContext(),
+                    (view, selectedYear, selectedMonth, selectedDay) -> {
+                        Calendar selected = Calendar.getInstance();
+                        selected.set(selectedYear, selectedMonth, selectedDay);
+
+                        // Verificar que sea lunes-viernes
+                        int dayOfWeek = selected.get(Calendar.DAY_OF_WEEK);
+                        if(dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY){
+                            Toast.makeText(getContext(), "Solo se permiten días de lunes a viernes", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        String fechaSeleccionada = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                        binding.etdFecha.setText(fechaSeleccionada);
+
+                        // Consultar horarios libres
+                        vm.cargarHorariosLibres(fechaSeleccionada);
+                    },
+                    year, month, day
+            );
+
+            datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+            datePickerDialog.show();
         });
 
         binding.ibCargarPaciente.setOnClickListener(new View.OnClickListener() {
