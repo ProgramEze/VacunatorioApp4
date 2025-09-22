@@ -1,25 +1,28 @@
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:foreground="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:elevation="4dp">
+    android:layout_margin="4dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="4dp"
+    card_view:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="8dp"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/tvFecha"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2025-09-20"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="22/09/2025"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/tvDisponibles"
@@ -27,7 +30,6 @@
             android:layout_height="wrap_content"
             android:text="5 horarios disponibles"
             android:textSize="14sp"
-            android:textColor="@android:color/darker_gray" />
-
+            android:gravity="center"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

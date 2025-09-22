@@ -76,7 +76,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Relación Tutor -->
-
     <ImageButton
         android:id="@+id/ibCargarTutor"
         android:layout_width="47dp"
@@ -100,18 +99,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilDNITutor" />
 
-    <!-- Fecha de la cita -->
+    <!-- Fecha de la Turno -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilFecha"
-        style="@style/Widget.VacunatorioApp4.TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColorHint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:endIconMode="clear_text"
         app:layout_constraintTop_toBottomOf="@+id/spnRelacionTutor">
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etdFecha"
             android:layout_width="match_parent"
@@ -119,32 +117,11 @@
             android:hint="Seleccionar fecha"
             android:focusable="false"
             android:inputType="none"
-            android:clickable="true"
             android:textColor="@color/black"
             android:textColorHint="@color/black"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Horario -->
-    <Spinner
-        android:id="@+id/spnHorarios"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:spinnerMode="dialog"
-        android:theme="@style/MySpinnerDialogTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilFecha" />
-
-    <Button
-        android:id="@+id/btnSeleccionarFechaHora"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Seleccionar día y horario"
-        app:layout_constraintTop_toBottomOf="@+id/spnHorarios"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
+    <!-- Contenedor para mostrar DisponibilidadFragment -->
 
     <!-- Botones -->
     <Button
@@ -155,7 +132,7 @@
         android:text="Limpiar campos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSeleccionarFechaHora" />
+        app:layout_constraintTop_toBottomOf="@+id/tilFecha" />
 
     <Button
         android:id="@+id/btnCargarTurno"
@@ -168,7 +145,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnLimpiar" />
 
     <Button
-        android:id="@+id/btnConfirmarCita"
+        android:id="@+id/btnConfirmarTurno"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -186,7 +163,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnConfirmarCita" />
+        app:layout_constraintTop_toBottomOf="@+id/btnConfirmarTurno" />
 
     <Button
         android:id="@+id/btnConfirmarAplicacion"

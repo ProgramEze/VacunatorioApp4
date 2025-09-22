@@ -4,63 +4,67 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ezequieldiaz.vacunatorioapp4.R;
-import com.ezequieldiaz.vacunatorioapp4.model.Disponibilidad;
-import com.ezequieldiaz.vacunatorioapp4.model.DisponibilidadResponse;
+import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
 
 import java.util.List;
 
-public class DisponibilidadAdapter extends RecyclerView.Adapter<DisponibilidadAdapter.DisponibilidadViewHolder> {
+public class DisponibilidadAdapter extends RecyclerView.Adapter<DisponibilidadAdapter.FechaViewHolder> {
 
-    private List<Disponibilidad> lista;
+    private List<FechasResponse> listaFechas;
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(Disponibilidad disponibilidad);
+        void onItemClick(FechasResponse disponibilidad);
     }
 
-    public DisponibilidadAdapter(List<Disponibilidad> lista, OnItemClickListener listener) {
-        this.lista = lista;
+    public DisponibilidadAdapter(List<FechasResponse> listaFechas, OnItemClickListener listener) {
+        this.listaFechas = listaFechas;
         this.listener = listener;
     }
 
     @NonNull
     @Override
-    public DisponibilidadViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FechaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_disponibilidad, parent, false);
-        return new DisponibilidadViewHolder(view);
+                .inflate(R.layout.item_fecha, parent, false);
+        return new FechaViewHolder(view);
+    }
+
+    public void setLista(List<FechasResponse> nuevaLista) {
+        this.listaFechas = nuevaLista;
+        notifyDataSetChanged();
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DisponibilidadViewHolder holder, int position) {
-        Disponibilidad disponibilidad = lista.get(position);
-        holder.bind(disponibilidad, listener);
+    public void onBindViewHolder(@NonNull FechaViewHolder holder, int position) {
+        FechasResponse disponibilidad = listaFechas.get(position);
+        holder.tvFecha.setText(disponibilidad.getFecha());
+
+        // Contar horarios libres
+        long libres = disponibilidad.getHorarios().stream().filter(h -> h.isLibre()).count();
+        holder.tvDisponibles.setText(libres + " horarios disponibles");
+
+        // Click en la fecha
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(disponibilidad));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return listaFechas.size();
     }
 
-    static class DisponibilidadViewHolder extends RecyclerView.ViewHolder {
-        TextView tvFecha, tvDisponibles;
+    static class FechaViewHolder extends RecyclerView.ViewHolder {
+        TextView tvFecha;
+        TextView tvDisponibles;
 
-        public DisponibilidadViewHolder(@NonNull View itemView) {
+        public FechaViewHolder(@NonNull View itemView) {
             super(itemView);
             tvFecha = itemView.findViewById(R.id.tvFecha);
             tvDisponibles = itemView.findViewById(R.id.tvDisponibles);
-        }
-
-        public void bind(final Disponibilidad disponibilidad, final OnItemClickListener listener) {
-            tvFecha.setText(disponibilidad.getFecha());
-            tvDisponibles.setText(disponibilidad.getDisponibles() + " horarios disponibles");
-
-            itemView.setOnClickListener(v -> listener.onItemClick(disponibilidad));
         }
     }
 }

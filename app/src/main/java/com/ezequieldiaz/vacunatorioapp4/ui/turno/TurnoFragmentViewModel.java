@@ -3,32 +3,25 @@ package com.ezequieldiaz.vacunatorioapp4.ui.turno;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-import static androidx.core.app.ActivityCompat.startActivityForResult;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
 import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
 import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.request.ApiClient;
-import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
 import com.ezequieldiaz.vacunatorioapp4.util.SingleLiveEvent;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +29,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalTime;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -63,8 +54,11 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<String> mMensaje;
     private MutableLiveData<Boolean> mCancelarYConfirmar;
     private SharedPreferences sharedPreferences;
-
+    private MutableLiveData<Void> mShowDatePickerDialog;
     private SingleLiveEvent<Long> mShowDatePickerEvent;
+    private MutableLiveData<Boolean> mEventoMostrarDialogoMesAnio;
+    private MutableLiveData<FechaSeleccionada> mFechaSeleccionada;
+    private MutableLiveData<Boolean> mMostrarDialog;
 
     public TurnoFragmentViewModel(@NonNull Application application) {
         super(application);
@@ -103,6 +97,10 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mFechaHora = new MutableLiveData<>();
         }
         return mFechaHora;
+    }
+
+    public void setHorarioSeleccionado(String horario) {
+        mFechaHora.setValue(horario);
     }
 
     public LiveData<Turno> getMTurno() {
@@ -147,7 +145,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         return mMensaje;
     }
 
-    public LiveData<Boolean> getmCancelarYConfirmar(){
+    public LiveData<Boolean> getMCancelarYConfirmar(){
         if(mCancelarYConfirmar == null){
             mCancelarYConfirmar = new MutableLiveData<>();
         }
@@ -161,6 +159,58 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         return mShowDatePickerEvent;
     }
 
+    public LiveData<FechaSeleccionada> getMFechaSeleccionada() {
+        if (mFechaSeleccionada == null) {
+            mFechaSeleccionada = new MutableLiveData<>();
+        }
+        return mFechaSeleccionada;
+    }
+
+    public LiveData<Boolean> getMEventoMostrarDialogoMesAnio() {
+        if (mEventoMostrarDialogoMesAnio == null) {
+            mEventoMostrarDialogoMesAnio = new MutableLiveData<>();
+        }
+        return mEventoMostrarDialogoMesAnio;
+    }
+
+    public LiveData<Boolean> getMMostrarDialog() {
+        if (mMostrarDialog == null) {
+            mMostrarDialog = new MutableLiveData<>();
+        }
+        return mMostrarDialog;
+    }
+
+
+    public void solicitarSeleccionFecha() {
+        mMostrarDialog.setValue(true);
+    }
+    public void setFechaSeleccionada(FechaSeleccionada fecha) {
+        mFechaSeleccionada.setValue(fecha);
+        mMostrarDialog.setValue(false);
+    }
+
+    public void solicitarMostrarDialogoMesAnio() {
+        mEventoMostrarDialogoMesAnio.setValue(true);
+    }
+
+    public void dialogoMesAnioCancelado() {
+        mEventoMostrarDialogoMesAnio.setValue(false); // Resetea el evento
+    }
+
+    // Estos métodos pueden quedarse aquí si solo generan los datos para los spinners
+    public String[] getMesesArray() {
+        return new String[]{"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
+    }
+
+    public List<String> getAniosArray() {
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        List<String> listaAnios = new ArrayList<>();
+        for (int i = currentYear; i <= currentYear + 1; i++) {
+            listaAnios.add(String.valueOf(i));
+        }
+        return listaAnios;
+    }
+
     public int cargarTutor(String tutor){
         ArrayList<String> relaciones = new ArrayList<>();
         relaciones.add("Madre");
@@ -169,6 +219,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         relaciones.add("Otro");
         return relaciones.indexOf(tutor);
     }
+
 
     public void cargarRelaciones() {
         ArrayList<String> relaciones = new ArrayList<>();
@@ -220,49 +271,10 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         });
     }
 
-    public void cargarHorarios() {
-        ArrayList<String> horarios = new ArrayList<>();
-        horarios.add("Seleccione el horario de la cita");
-        horarios.add("08:00");
-        horarios.add("08:15");
-        horarios.add("08:30");
-        horarios.add("08:45");
-        horarios.add("09:00");
-        horarios.add("09:15");
-        horarios.add("09:30");
-        horarios.add("09:45");
-        horarios.add("10:00");
-        horarios.add("10:15");
-        horarios.add("10:30");
-        horarios.add("10:45");
-        horarios.add("11:00");
-        horarios.add("11:15");
-        horarios.add("11:30");
-        horarios.add("11:45");
-        horarios.add("12:00");
-        horarios.add("12:15");
-        horarios.add("12:30");
-        horarios.add("12:45");
-        horarios.add("13:00");
-        horarios.add("13:15");
-        horarios.add("13:30");
-        horarios.add("13:45");
-        horarios.add("14:00");
-        horarios.add("14:15");
-        horarios.add("14:30");
-        horarios.add("14:45");
-        horarios.add("15:00");
-        horarios.add("15:15");
-        horarios.add("15:30");
-        horarios.add("15:45");
-        horarios.add("16:00");
-        mHorarios.setValue(horarios);
-    }
 
     public void cargarSpinners() {
         cargarTipos();
         cargarRelaciones();
-        cargarHorarios();
     }
 
     public void cargarTurno(String fecha) {
@@ -308,7 +320,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         });
     }
 
-    public void seleccionarFechaHora(FragmentManager fm) {
+    /*public void seleccionarFechaHora(String fecha) {
         // Abrir selector de fecha
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Selecciona la fecha")
@@ -348,13 +360,56 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             return true;
         }
         return false;
-
     }
 
     public void fechaSeleccionada(int year, int month, int dayOfMonth) {
         String fechaElegida = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
         mFecha.setValue(fechaElegida);
     }
+
+    private void mostrarDialogMesAno() {
+        final Dialog dialog = new Dialog(requireContext());
+        DialogMesAnoBinding dialogBinding = DialogMesAnoBinding.inflate(getLayoutInflater());
+        dialog.setContentView(dialogBinding.getRoot());
+        dialog.setCancelable(true);
+
+        // Array de meses
+        String[] meses = {"Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"};
+
+        ArrayAdapter<String> adapterMes = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, meses);
+        adapterMes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dialogBinding.spinnerMes.setAdapter(adapterMes);
+
+        // Array de años
+        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        List<String> listaAnios = new ArrayList<>();
+        for (int i = currentYear; i <= currentYear + 1; i++) {
+            listaAnios.add(String.valueOf(i));
+        }
+
+        ArrayAdapter<String> adapterAno = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, listaAnios);
+        adapterAno.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dialogBinding.spinnerAnio.setAdapter(adapterAno);
+
+        // Selección por defecto
+        dialogBinding.spinnerMes.setSelection(java.util.Calendar.getInstance().get(java.util.Calendar.MONTH));
+        dialogBinding.spinnerAnio.setSelection(0); // posición del año actual en la lista (actual - (currentYear-10))
+
+        // Botón OK
+        dialogBinding.getRoot().findViewById(R.id.btnOk).setOnClickListener(v -> {
+            String mes = (String) dialogBinding.spinnerMes.getSelectedItem();
+            String ano = (String) dialogBinding.spinnerAnio.getSelectedItem();
+
+            String seleccion = mes + " / " + ano;
+            //vm.seleccionarFechaHora(seleccion);
+
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }*/
 
     public void buscarDNIPaciente(String dni){
         ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
@@ -458,10 +513,10 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         mCancelarYConfirmar.setValue(false);
     }
 
-    public void guardarTurno(TipoDeVacuna tDV, String rT, String hor, String fecha, String boton) {
+    public void guardarTurno(TipoDeVacuna tDV, String rT, String fecha, String boton) {
         Log.d("guardar", rT+"");
         try {
-            if (tDV == null || rT.equalsIgnoreCase("Seleccione la relación con el tutor") || hor.isEmpty()) {
+            if (tDV == null || rT.equalsIgnoreCase("Seleccione la relación con el tutor")) {
                 mMensaje.setValue("Seleccione el tipo de vacuna, la relación con el tutor y/o el horario de la cita");
                 return;
             }
@@ -483,7 +538,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             turno.setTutorId(mTutor.getValue().getId());
             turno.setAgenteId(matricula);
             turno.setRelacionTutor(rT);
-            LocalDateTime cita = LocalDateTime.of(LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())), LocalTime.parse(hor+"", DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())));
+            LocalDateTime cita = LocalDateTime.of(LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())), LocalTime.parse(mFechaHora.getValue()+"", DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())));
             turno.setCita(cita+":00");
             ApiClient.MisEndPoints api = ApiClient.getEndPoints();
             if (token != null) {

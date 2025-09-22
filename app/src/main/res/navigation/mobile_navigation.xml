@@ -33,9 +33,9 @@
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.perfil.PerfilFragment"
         android:label="@string/menu_perfil"
         tools:layout="@layout/fragment_perfil">
-    <action
-        android:id="@+id/action_nav_perfil_to_nav_home"
-        app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_nav_perfil_to_nav_home"
+            app:destination="@id/nav_home" />
     </fragment>
 
     <fragment
@@ -73,21 +73,30 @@
         android:name="com.ezequieldiaz.vacunatorioapp4.ui.turno.TurnoFragment"
         android:label="@string/menu_turno"
         tools:layout="@layout/fragment_turno">
+
         <action
             android:id="@+id/action_nav_turno_to_nav_home"
             app:destination="@id/nav_home" />
 
         <action
-            android:id="@+id/action_nav_turno_to_nav_disponibilidad"
-            app:destination="@id/nav_disponibilidad" />
+            android:id="@+id/action_nav_turno_to_nav_fechas"
+            app:destination="@id/nav_fechas" />
     </fragment>
 
-    <!-- Pantalla con RecyclerView de disponibilidades -->
+    <!-- Pantalla con RecyclerView de fechas -->
     <fragment
-        android:id="@+id/nav_disponibilidad"
-        android:name="com.ezequieldiaz.vacunatorioapp4.ui.turno.DisponibilidadFragment"
-        android:label="Disponibilidad"
-        tools:layout="@layout/fragment_disponibilidad" />
+        android:id="@+id/nav_fechas"
+        android:name="com.ezequieldiaz.vacunatorioapp4.ui.turno.FechasFragment"
+        android:label="@string/menu_fechas"
+        tools:layout="@layout/fragment_fechas">
+        <action
+            android:id="@+id/action_nav_fechas_to_nav_home"
+            app:destination="@id/nav_home" />
+
+        <action
+            android:id="@+id/action_nav_fechas_to_nav_turno"
+            app:destination="@id/nav_turno" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_deslogeo"

@@ -27,6 +27,9 @@ threetenabp = "1.4.9"
 materialVersion = "1.14.0-alpha04"
 desugar_jdk_libs = "2.1.5"
 recyclerview = "1.4.0"
+monthandyearpicker = "1.3.0"
+monthpicker = "1.1.0"
+monthpickerVersion = "1.1.0' "
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -56,6 +59,9 @@ threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", ver
 google-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 desugar_jdk_libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+monthandyearpicker = { group = "com.whiteelephant", name = "monthandyearpicker", version.ref = "monthandyearpicker" }
+monthpicker = { group = "com.whiteelephant", name = "monthpicker", version.ref = "monthpicker" }
+whiteelephant-monthpicker = { group = "implementation 'com.whiteelephant", name = "monthpicker", version.ref = "monthpickerVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

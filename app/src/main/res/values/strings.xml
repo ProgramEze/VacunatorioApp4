@@ -46,6 +46,7 @@
     <string name="menu_turno">Turnos</string>
     <string name="menu_aplicacion">Aplicaciones</string>
     <string name="menu_deslogeo">Desloguearse</string>
+    <string name="menu_fechas">Fechas de turnos disponibles</string>
     <string name="fingerprint">Ingrese la huella digital para ingresar en la aplicación</string>
     <string-array name="genero_array">
         <item>Seleccione el género del paciente</item>
@@ -53,5 +54,18 @@
         <item>Femenino</item>
         <item>Otro</item>
     </string-array>
-
+    <string-array name="meses">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
 </resources>
