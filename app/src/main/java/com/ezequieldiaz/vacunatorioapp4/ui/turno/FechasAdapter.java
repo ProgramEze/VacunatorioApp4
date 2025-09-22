@@ -44,6 +44,15 @@ public class FechasAdapter extends RecyclerView.Adapter<FechasAdapter.FechaViewH
         return new FechaViewHolder(view);
     }
 
+    public void actualizarLista(List<FechasResponse> nuevasFechas) {
+        listaDeFechas.clear();
+        if (nuevasFechas != null) {
+            listaDeFechas.addAll(nuevasFechas);
+        }
+        notifyDataSetChanged();
+    }
+
+
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull FechaViewHolder holder, int position) {

@@ -1,32 +1,21 @@
 package com.ezequieldiaz.vacunatorioapp4.ui.turno;
 
-import static android.view.View.GONE;
-
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.NumberPicker;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-
 import com.ezequieldiaz.vacunatorioapp4.R;
-import com.ezequieldiaz.vacunatorioapp4.databinding.DialogMesAnoBinding;
 import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentTurnoBinding;
 import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
@@ -34,26 +23,14 @@ import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
 import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalTime;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.DateTimeParseException;
 
 public class TurnoFragment extends Fragment {
     private TurnoFragmentViewModel vm;
     private FragmentTurnoBinding binding;
-    private DialogMesAnoBinding dialogBinding; // Variable para el binding del diálogo
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -63,7 +40,6 @@ public class TurnoFragment extends Fragment {
 
         vm = new ViewModelProvider(this).get(TurnoFragmentViewModel.class);
 
-        // --- Recuperar datos desde el SavedStateHandle ---
         NavController navController = NavHostFragment.findNavController(this);
 
         navController.getCurrentBackStackEntry()
@@ -73,29 +49,24 @@ public class TurnoFragment extends Fragment {
                     String hora = navController.getCurrentBackStackEntry()
                             .getSavedStateHandle()
                             .get("horaSeleccionada");
-
+                    // 2025-08-20T08:15:00
                     if (fechaIso != null && hora != null) {
                         try {
-                            // Parseamos la fecha en formato ISO (ej: "2025-09-25")
+                            String cita = fechaIso + "T" + hora+":00";
+                            Log.d("Cita", cita);
                             SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                             Date date = isoFormat.parse(fechaIso.toString());
 
-                            // La convertimos a formato argentino (dd/MM/yyyy)
                             SimpleDateFormat argFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                             String fechaFormateada = argFormat.format(date);
-
-                            // Mostramos fecha + hora
                             binding.etdFecha.setText(fechaFormateada + " - " + hora);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            // Si algo falla mostramos la fecha original
                             binding.etdFecha.setText(fechaIso + " / " + hora);
                         }
                     }
                 });
 
-
-        // --- AQUÍ VA EL RESTO DE TU CÓDIGO DE CONFIGURACIÓN ---
         vm.getMListaTipo().observe(getViewLifecycleOwner(), tiposDeVacuna -> {
             ArrayAdapter<TipoDeVacuna> adapter = new ArrayAdapter<>(
                     requireContext(),
@@ -104,7 +75,7 @@ public class TurnoFragment extends Fragment {
             ) {
                 @Override
                 public boolean isEnabled(int position) {
-                    return position != 0; // deshabilita la primera opción
+                    return position != 0;
                 }
             };
             adapter.setDropDownViewResource(R.layout.spinner_item_dialog);
@@ -125,29 +96,26 @@ public class TurnoFragment extends Fragment {
             }
         });
 
-        vm.getMFechaHora().observe(getViewLifecycleOwner(), new Observer<>() {
+        vm.getMFechaYHora().observe(getViewLifecycleOwner(), new Observer<>() {
             @Override
             public void onChanged(String fecha) {
                 binding.etdFecha.setText(fecha);
             }
         });
 
-        vm.getMFechaHora().observe(getViewLifecycleOwner(), fechaHora -> {
+        vm.getMFechaYHora().observe(getViewLifecycleOwner(), fechaHora -> {
             binding.etdFecha.setText(fechaHora);
         });
 
-
-        // Observador para el paciente
         vm.getMPaciente().observe(getViewLifecycleOwner(), paciente -> {
             if (paciente != null && vm.getMTutor().getValue() != null && binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")) {
-                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
+                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(), binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
             }
         });
 
-        // Observador para el tutor
         vm.getMTutor().observe(getViewLifecycleOwner(), tutor -> {
             if (tutor != null && vm.getMPaciente().getValue() != null && binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")) {
-                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
+                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(), binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
             }
         });
 
@@ -224,15 +192,6 @@ public class TurnoFragment extends Fragment {
             }
         });
 
-        /*vm.getMEventoMostrarDialogoMesAnio().observe(getViewLifecycleOwner(), mostrar -> {
-            if (mostrar != null && mostrar) {
-                mostrarDialogoMesAno();
-                // Opcional: Resetea el evento en el ViewModel para que no se muestre de nuevo
-                // al rotar la pantalla si no es el comportamiento deseado.
-                // viewModel.dialogoMostrado(); // Necesitarías un método en el VM para esto.
-            }
-        });*/
-
         binding.etdFecha.setOnClickListener(v -> {
             vm.solicitarSeleccionFecha();
         });
@@ -250,55 +209,16 @@ public class TurnoFragment extends Fragment {
 
         vm.getMFechaSeleccionada().observe(getViewLifecycleOwner(), fecha -> {
             if (fecha != null) {
-                // Navegar al fragment de fechasNavController navController = NavHostFragment.findNavController(this);
-
-                // Chequear que estemos en Turno antes de navegar
                 if (navController.getCurrentDestination() != null &&
                         navController.getCurrentDestination().getId() == R.id.nav_turno) {
-
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("fechaSeleccionada", fecha);
-
                     navController.navigate(R.id.action_nav_turno_to_nav_fechas, bundle);
 
-                    // Resetear LiveData para evitar loops
                     vm.setFechaSeleccionada(null);
                 }
             }
         });
-
-
-        /*binding.etdFecha.setOnClickListener(v -> {
-            final Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    getContext(),
-                    (view, selectedYear, selectedMonth, selectedDay) -> {
-                        Calendar selected = Calendar.getInstance();
-                        selected.set(selectedYear, selectedMonth, selectedDay);
-
-                        // Verificar que sea lunes-viernes
-                        int dayOfWeek = selected.get(Calendar.DAY_OF_WEEK);
-                        if(dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY){
-                            Toast.makeText(getContext(), "Solo se permiten días de lunes a viernes", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-
-                        String fechaSeleccionada = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                        binding.etdFecha.setText(fechaSeleccionada);
-
-                        // Consultar horarios libres
-                        vm.cargarHorariosLibres(fechaSeleccionada);
-                    },
-                    year, month, day
-            );
-
-            datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
-            datePickerDialog.show();
-        });*/
 
         binding.ibCargarPaciente.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,30 +242,6 @@ public class TurnoFragment extends Fragment {
             limpiarCampos();
         });
 
-        /*binding.btnCargarTurno.setOnClickListener(v -> {
-            try {
-                binding.etDNIPaciente.setText("");
-                binding.etDNITutor.setText("");
-                binding.spnTipoDeVacuna.setSelection(0);
-                binding.spnRelacionTutor.setSelection(0);
-                // Crear LocalDateTime desde la fecha y hora elegidas
-                LocalDateTime turno = LocalDateTime.of(
-                        LocalDate.parse(binding.etdFecha.getText().toString(),
-                                DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())),
-                        LocalTime.parse(binding.spnHorarios.getSelectedItem().toString() + ":00",
-                                DateTimeFormatter.ofPattern("HH:mm:ss", Locale.getDefault()))
-                );
-
-                String citaFormateada = turno.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
-                //Log.d("cargarTurno", cita.toString());
-                vm.cargarTurno(citaFormateada);
-            }catch (DateTimeParseException e) {
-                Log.d("cargar", e.getMessage());
-                mostrarToast("Seleccione una fecha y una hora para la cita");
-            }
-        });*/
-
         binding.btnConfirmarTurno.setOnClickListener(v -> {
             if(binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")){
                 vm.buscarDNIPaciente(binding.etDNIPaciente.getText().toString());
@@ -354,13 +250,6 @@ public class TurnoFragment extends Fragment {
                 vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
             }
         });
-
-        /*binding.etdFecha.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return vm.fechaClickeada(event);
-            }
-        });*/
 
         binding.btnCancelarTurno.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -393,82 +282,6 @@ public class TurnoFragment extends Fragment {
         binding.spnTipoDeVacuna.setSelection(0);
         vm.limpiarMutables();
     }
-
-    /*private void mostrarDialogoMesAno() {
-        // Asegúrate de que dialogBinding se infle cada vez para evitar "The specified child already has a parent"
-        dialogBinding = DialogMesAnoBinding.inflate(getLayoutInflater()); // Correcto aquí
-        final Dialog dialog = new Dialog(requireContext()); // Correcto aquí
-        dialog.setContentView(dialogBinding.getRoot());
-        dialog.setCancelable(true);
-
-        // Array de meses desde el ViewModel
-        String[] meses = vm.getMesesArray();
-        ArrayAdapter<String> adapterMes = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, meses);
-        adapterMes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dialogBinding.spinnerMes.setAdapter(adapterMes);
-
-        // Array de años desde el ViewModel
-        List<String> listaAnios = vm.getAniosArray();
-        ArrayAdapter<String> adapterAno = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, listaAnios);
-        adapterAno.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dialogBinding.spinnerAnio.setAdapter(adapterAno);
-
-        // Selección por defecto
-        dialogBinding.spinnerMes.setSelection(Calendar.getInstance().get(Calendar.MONTH));
-        dialogBinding.spinnerAnio.setSelection(0); // Asume que el año actual es el primero
-
-        // Botón OK
-        // Asegúrate de que el ID R.id.btnOk existe en tu layout dialog_mes_ano.xml
-        // y que es un Button o una View clickeable.
-        Button btnOk = dialogBinding.getRoot().findViewById(R.id.btnOk); // O usa dialogBinding.btnOk si está definido en el binding
-        if (btnOk != null) {
-            btnOk.setOnClickListener(v -> {
-                int mesPosition = dialogBinding.spinnerMes.getSelectedItemPosition();
-                String mesSeleccionado = (String) dialogBinding.spinnerMes.getSelectedItem();
-                String anoSeleccionado = (String) dialogBinding.spinnerAnio.getSelectedItem();
-
-                vm.onMesAnioConfirmado(mesSeleccionado, mesPosition, anoSeleccionado);
-                dialog.dismiss();
-            });
-        }
-
-
-        dialog.setOnCancelListener(dialogInterface -> {
-            vm.dialogoMesAnioCancelado();
-        });
-        dialog.setOnDismissListener(dialogInterface -> {
-            // Puedes llamar a dialogoMesAnioCancelado aquí también si quieres que
-            // el evento se resetee tanto al cancelar como al cerrar (dismiss)
-        });
-
-        dialog.show();
-    }*/
-
-    /*private void mostrarFechaSelecionada(long fechaSeleccionada) {
-        Calendar fecha = Calendar.getInstance();
-        fecha.setTimeInMillis(fechaSeleccionada);
-        int anioElegido = fecha.get(Calendar.YEAR);
-        int mesElegido = fecha.get(Calendar.MONTH);
-        int diaElegido = fecha.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                requireContext(),
-                android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int anio, int mes, int dia) {
-                        vm.fechaSeleccionada(anio, mes, dia);
-                    }
-                },
-                anioElegido,
-                mesElegido,
-                diaElegido
-        );
-        datePickerDialog.getDatePicker().setCalendarViewShown(false);
-        datePickerDialog.show();
-    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

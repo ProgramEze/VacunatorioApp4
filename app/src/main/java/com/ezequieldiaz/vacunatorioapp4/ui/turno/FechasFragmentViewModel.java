@@ -2,6 +2,7 @@ package com.ezequieldiaz.vacunatorioapp4.ui.turno;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -36,38 +37,22 @@ public class FechasFragmentViewModel extends AndroidViewModel {
         return mFechas;
     }
 
-    public LiveData<String> getMensajeError() {
-        if (mMensajeError == null) {
-            mMensajeError = new MutableLiveData<>();
-        }
-        return mMensajeError;
-    }
-
     public void cargarFechas(int mes, int anio) {
-        ApiClient.MisEndPoints mep = ApiClient.getEndPoints();
-        String token = ApiClient.leerToken(getApplication().getApplicationContext());
-        if (token != null) {
-            Call<List<FechasResponse>> call = mep.getDisponibilidadMes(token, anio, mes);
-            call.enqueue(new Callback<>() {
-                @Override
-                public void onResponse(Call<List<FechasResponse>> call, Response<List<FechasResponse>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        mFechas.postValue(response.body());
-                    } else {
-                        mFechas.postValue(new ArrayList<>());
-                        mMensajeError.postValue("Error al cargar disponibilidades: " + response.code());
-                    }
+        String token = ApiClient.leerToken(getApplication());
+        Call<List<FechasResponse>> call = ApiClient.getEndPoints().getDisponibilidadMes(token, anio, mes);
+        call.enqueue(new Callback<List<FechasResponse>>() {
+            @Override
+            public void onResponse(Call<List<FechasResponse>> call, Response<List<FechasResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    mFechas.setValue(response.body());
                 }
-
-                @Override
-                public void onFailure(Call<List<FechasResponse>> call, Throwable t) {
-                    mFechas.postValue(new ArrayList<>());
-                    mMensajeError.postValue("Fallo al cargar disponibilidades: " + t.getMessage());
-                }
-            });
-        } else {
-            mMensajeError.postValue("Token nulo");
-        }
+            }
+            @Override
+            public void onFailure(Call<List<FechasResponse>> call, Throwable t) {
+                Log.e("FechasViewModel", "Error al cargar fechas: " + t.getMessage());
+            }
+        });
     }
+
 }
 
