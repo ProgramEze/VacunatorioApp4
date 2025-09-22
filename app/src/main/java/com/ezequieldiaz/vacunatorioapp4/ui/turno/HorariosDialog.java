@@ -4,14 +4,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.DialogHorariosBinding;
+import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class HorariosDialog extends DialogFragment {
 
@@ -28,6 +37,17 @@ public class HorariosDialog extends DialogFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            int width = (getResources().getDisplayMetrics().widthPixels);
+            int height = (getResources().getDisplayMetrics().heightPixels);
+            getDialog().getWindow().setLayout(width, height);
+        }
+    }
+
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -42,19 +62,69 @@ public class HorariosDialog extends DialogFragment {
         binding = DialogHorariosBinding.inflate(inflater, container, false);
 
         // Mostramos la fecha
-        binding.tvFechaDialog.setText(fechaSeleccionada.getFecha());
+        try {
+            // Parseamos la fecha ISO
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date date = isoFormat.parse(fechaSeleccionada.getFecha());
+
+            // Obtenemos día de la semana y mes en español
+            SimpleDateFormat diaSemanaFormat = new SimpleDateFormat("EEEE", new Locale("es", "AR"));
+            String diaSemana = diaSemanaFormat.format(date);
+
+            SimpleDateFormat diaMesFormat = new SimpleDateFormat("d", Locale.getDefault());
+            String diaMes = diaMesFormat.format(date);
+
+            SimpleDateFormat mesFormat = new SimpleDateFormat("MMMM", new Locale("es", "AR"));
+            String mes = mesFormat.format(date);
+
+            SimpleDateFormat anioFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+            String anio = anioFormat.format(date);
+
+            // Armamos el título
+            String titulo = "Horarios del " + diaSemana + " " + diaMes + " de " + mes + " del " + anio;
+            binding.tvFechaDialog.setText(titulo);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // fallback: fecha original
+            binding.tvFechaDialog.setText(fechaSeleccionada.getFecha());
+        }
+
 
         // Configuramos RecyclerView con GridLayoutManager
-        binding.rvHorariosDialog.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        binding.rvHorarios.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
         // Creamos adapter y manejamos click en horario
         HorariosAdapter adapter = new HorariosAdapter(fechaSeleccionada.getHorarios(), horario -> {
-            // Acción al clickear un horario libre
-            // Toast.makeText(getContext(), "Horario seleccionado: " + horario.getHora(), Toast.LENGTH_SHORT).show();
-            dismiss(); // cerramos diálogo
+            if (horario != null) {
+                NavController navController = NavHostFragment.findNavController(HorariosDialog.this);
+
+                // Guardamos los datos en el SavedStateHandle del TurnoFragment
+                navController.getBackStackEntry(R.id.nav_turno)
+                        .getSavedStateHandle()
+                        .set("fechaSeleccionadaCompleta", fechaSeleccionada.getFecha());
+
+                navController.getBackStackEntry(R.id.nav_turno)
+                        .getSavedStateHandle()
+                        .set("horaSeleccionada", horario.getHora());
+
+                Toast.makeText(
+                        getContext(),
+                        "Fecha seleccionada: " + fechaSeleccionada.getFecha() + " / " + horario.getHora(),
+                        Toast.LENGTH_LONG
+                ).show();
+
+                // Cerramos el diálogo
+                dismiss();
+
+                // Volvemos al TurnoFragment directamente
+                navController.popBackStack(R.id.nav_turno, false);
+            }
         });
 
-        binding.rvHorariosDialog.setAdapter(adapter);
+
+        binding.rvHorarios.setAdapter(adapter);
+
 
         return binding.getRoot();
     }

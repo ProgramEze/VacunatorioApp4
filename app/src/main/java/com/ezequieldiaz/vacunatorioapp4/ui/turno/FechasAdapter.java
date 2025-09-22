@@ -14,7 +14,10 @@ import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
 import com.ezequieldiaz.vacunatorioapp4.model.HorariosResponse;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class FechasAdapter extends RecyclerView.Adapter<FechasAdapter.FechaViewHolder> {
     private List<FechasResponse> listaDeFechas;
@@ -45,14 +48,33 @@ public class FechasAdapter extends RecyclerView.Adapter<FechasAdapter.FechaViewH
     @Override
     public void onBindViewHolder(@NonNull FechaViewHolder holder, int position) {
         FechasResponse fecha = listaDeFechas.get(position);
-        holder.tvFecha.setText(fecha.getFecha());
+
+        try {
+            // Parseamos la fecha ISO (ej: "2025-09-25")
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date date = isoFormat.parse(fecha.getFecha());
+
+            // La convertimos a formato argentino
+            SimpleDateFormat argFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String fechaFormateada = argFormat.format(date);
+
+            holder.tvFecha.setText(fechaFormateada);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Si falla mostramos la fecha original
+            holder.tvFecha.setText(fecha.getFecha());
+        }
+
+        // Contamos horarios libres
         int libres = 0;
-        for (HorariosResponse h : fecha.getHorarios()) {
-            if (h.isLibre()) libres++;
+        if (fecha.getHorarios() != null) {
+            for (HorariosResponse h : fecha.getHorarios()) {
+                if (h.isLibre()) libres++;
+            }
         }
         holder.tvDisponibles.setText(libres + " horarios disponibles");
 
-        // Asignamos el click
+        // Click listener de la CardView
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onFechaClick(fecha);

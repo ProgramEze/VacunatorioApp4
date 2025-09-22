@@ -35,11 +35,15 @@ import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.model.Tutor;
 import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalTime;
 import org.threeten.bp.LocalDateTime;
@@ -59,23 +63,52 @@ public class TurnoFragment extends Fragment {
 
         vm = new ViewModelProvider(this).get(TurnoFragmentViewModel.class);
 
-        vm.getMListaTipo().observe(getViewLifecycleOwner(), new Observer<>() {
-            @Override
-            public void onChanged(List<TipoDeVacuna> tiposDeVacuna) {
-                    ArrayAdapter<TipoDeVacuna> adapter = new ArrayAdapter<>(
-                            requireContext(),
-                            R.layout.spinner_item_dialog,
-                            tiposDeVacuna
-                    ) {
-                        @Override
-                        public boolean isEnabled(int position) {
-                            return position != 0;
-                        }
-                    };
+        // --- Recuperar datos desde el SavedStateHandle ---
+        NavController navController = NavHostFragment.findNavController(this);
 
-                    adapter.setDropDownViewResource(R.layout.spinner_item_dialog);
-                    binding.spnTipoDeVacuna.setAdapter(adapter);
-            }
+        navController.getCurrentBackStackEntry()
+                .getSavedStateHandle()
+                .getLiveData("fechaSeleccionadaCompleta")
+                .observe(getViewLifecycleOwner(), fechaIso -> {
+                    String hora = navController.getCurrentBackStackEntry()
+                            .getSavedStateHandle()
+                            .get("horaSeleccionada");
+
+                    if (fechaIso != null && hora != null) {
+                        try {
+                            // Parseamos la fecha en formato ISO (ej: "2025-09-25")
+                            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            Date date = isoFormat.parse(fechaIso.toString());
+
+                            // La convertimos a formato argentino (dd/MM/yyyy)
+                            SimpleDateFormat argFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                            String fechaFormateada = argFormat.format(date);
+
+                            // Mostramos fecha + hora
+                            binding.etdFecha.setText(fechaFormateada + " - " + hora);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // Si algo falla mostramos la fecha original
+                            binding.etdFecha.setText(fechaIso + " / " + hora);
+                        }
+                    }
+                });
+
+
+        // --- AQUÍ VA EL RESTO DE TU CÓDIGO DE CONFIGURACIÓN ---
+        vm.getMListaTipo().observe(getViewLifecycleOwner(), tiposDeVacuna -> {
+            ArrayAdapter<TipoDeVacuna> adapter = new ArrayAdapter<>(
+                    requireContext(),
+                    R.layout.spinner_item_dialog,
+                    tiposDeVacuna
+            ) {
+                @Override
+                public boolean isEnabled(int position) {
+                    return position != 0; // deshabilita la primera opción
+                }
+            };
+            adapter.setDropDownViewResource(R.layout.spinner_item_dialog);
+            binding.spnTipoDeVacuna.setAdapter(adapter);
         });
 
         vm.getMRelaciones().observe(getViewLifecycleOwner(), new Observer<>() {
@@ -217,7 +250,7 @@ public class TurnoFragment extends Fragment {
 
         vm.getMFechaSeleccionada().observe(getViewLifecycleOwner(), fecha -> {
             if (fecha != null) {
-                NavController navController = NavHostFragment.findNavController(this);
+                // Navegar al fragment de fechasNavController navController = NavHostFragment.findNavController(this);
 
                 // Chequear que estemos en Turno antes de navegar
                 if (navController.getCurrentDestination() != null &&
