@@ -59,22 +59,18 @@ public class FechasAdapter extends RecyclerView.Adapter<FechasAdapter.FechaViewH
         FechasResponse fecha = listaDeFechas.get(position);
 
         try {
-            // Parseamos la fecha ISO (ej: "2025-09-25")
             SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = isoFormat.parse(fecha.getFecha());
 
-            // La convertimos a formato argentino
             SimpleDateFormat argFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             String fechaFormateada = argFormat.format(date);
 
             holder.tvFecha.setText(fechaFormateada);
         } catch (Exception e) {
             e.printStackTrace();
-            // Si falla mostramos la fecha original
             holder.tvFecha.setText(fecha.getFecha());
         }
 
-        // Contamos horarios libres
         int libres = 0;
         if (fecha.getHorarios() != null) {
             for (HorariosResponse h : fecha.getHorarios()) {
@@ -83,7 +79,6 @@ public class FechasAdapter extends RecyclerView.Adapter<FechasAdapter.FechaViewH
         }
         holder.tvDisponibles.setText(libres + " horarios disponibles");
 
-        // Click listener de la CardView
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onFechaClick(fecha);

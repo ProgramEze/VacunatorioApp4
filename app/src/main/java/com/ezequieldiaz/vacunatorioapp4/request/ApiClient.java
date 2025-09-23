@@ -158,6 +158,14 @@ public class ApiClient {
                 @Path("mes") int mes
         );
 
+        @GET("Turnos/por-paciente")
+        Call<List<FechasResponse>> getTurnosPorPaciente(
+                @Header("Authorization") String token,
+                @Query("pacienteId") int pacienteId,
+                @Query("anio") int anio,
+                @Query("mes") int mes
+        );
+
         @GET("TipoDeVacunas")
         Call<List<TipoDeVacuna>> getTiposDeVacunas(@Header("Authorization") String token);
 

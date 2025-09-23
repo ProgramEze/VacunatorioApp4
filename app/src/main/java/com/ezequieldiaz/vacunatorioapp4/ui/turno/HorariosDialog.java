@@ -26,12 +26,14 @@ public class HorariosDialog extends DialogFragment {
 
     private static final String ARG_FECHA = "fechaSeleccionada";
     private FechasResponse fechaSeleccionada;
+    private String darTurnoOCargarTurno;
     private DialogHorariosBinding binding;
 
-    public static HorariosDialog newInstance(FechasResponse fecha) {
+    public static HorariosDialog newInstance(FechasResponse fecha, String darTurnoOCargarTurno) {
         HorariosDialog dialog = new HorariosDialog();
         Bundle args = new Bundle();
         args.putSerializable(ARG_FECHA, fecha);
+        args.putString("darTurnoOCargarTurno", darTurnoOCargarTurno);
         dialog.setArguments(args);
         return dialog;
     }
@@ -52,6 +54,7 @@ public class HorariosDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             fechaSeleccionada = (FechasResponse) getArguments().getSerializable(ARG_FECHA);
+            darTurnoOCargarTurno = getArguments().getString("darTurnoOCargarTurno");
         }
     }
 
@@ -61,9 +64,7 @@ public class HorariosDialog extends DialogFragment {
                              @Nullable Bundle savedInstanceState) {
         binding = DialogHorariosBinding.inflate(inflater, container, false);
 
-        // Mostramos la fecha
         try {
-            // Parseamos la fecha ISO
             SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = isoFormat.parse(fechaSeleccionada.getFecha());
 
@@ -86,20 +87,13 @@ public class HorariosDialog extends DialogFragment {
 
         } catch (Exception e) {
             e.printStackTrace();
-            // fallback: fecha original
             binding.tvFechaDialog.setText(fechaSeleccionada.getFecha());
         }
 
-
-        // Configuramos RecyclerView con GridLayoutManager
         binding.rvHorarios.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        // Creamos adapter y manejamos click en horario
         HorariosAdapter adapter = new HorariosAdapter(fechaSeleccionada.getHorarios(), horario -> {
             if (horario != null) {
                 NavController navController = NavHostFragment.findNavController(HorariosDialog.this);
-
-                // Guardamos los datos en el SavedStateHandle del TurnoFragment
                 navController.getBackStackEntry(R.id.nav_turno)
                         .getSavedStateHandle()
                         .set("fechaSeleccionadaCompleta", fechaSeleccionada.getFecha());
@@ -108,16 +102,18 @@ public class HorariosDialog extends DialogFragment {
                         .getSavedStateHandle()
                         .set("horaSeleccionada", horario.getHora());
 
+                navController.getBackStackEntry(R.id.nav_turno)
+                        .getSavedStateHandle()
+                        .set("darTurnoOCargarTurno", darTurnoOCargarTurno);
+
                 Toast.makeText(
                         getContext(),
-                        "Fecha seleccionada: " + fechaSeleccionada.getFecha() + " / " + horario.getHora(),
+                        "Fecha seleccionada: " + fechaSeleccionada.getFecha() + " / " + horario.getHora() + " / " + darTurnoOCargarTurno,
                         Toast.LENGTH_LONG
                 ).show();
 
-                // Cerramos el diálogo
                 dismiss();
 
-                // Volvemos al TurnoFragment directamente
                 navController.popBackStack(R.id.nav_turno, false);
             }
         });
