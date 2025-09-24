@@ -70,14 +70,12 @@ public class TurnoFragment extends Fragment {
                             e.printStackTrace();
                             binding.etdFecha.setText(fechaIso + " / " + hora);
                         }
-                    } else {
-
                     }
                 });
 
         vm.getMPaciente().observe(getViewLifecycleOwner(), paciente -> {
             if (paciente != null && vm.getMTutor().getValue() != null && binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")) {
-                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(), binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
+                //vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(), binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
             }
         });
 
@@ -103,9 +101,10 @@ public class TurnoFragment extends Fragment {
         });
 
         vm.getMTutor().observe(getViewLifecycleOwner(), tutor -> {
-            if (tutor != null && vm.getMPaciente().getValue() != null && binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")) {
-                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(), binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
-            }
+            /*if (tutor != null && vm.getMPaciente().getValue() != null && binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")) {
+            vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(), binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
+                //
+            }*/
         });
 
         vm.getMRelaciones().observe(getViewLifecycleOwner(), relaciones -> {
@@ -232,7 +231,6 @@ public class TurnoFragment extends Fragment {
             }
         });
 
-        // 🔹 Guardar selección en el ViewModel
         binding.spnTipoDeVacuna.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -243,7 +241,6 @@ public class TurnoFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        // 🔹 Guardar selección en el ViewModel
         binding.spnRelacionTutor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -263,12 +260,7 @@ public class TurnoFragment extends Fragment {
         });
 
         binding.btnConfirmarTurno.setOnClickListener(v -> {
-            if(binding.btnConfirmarTurno.getText().toString().equalsIgnoreCase("Otorgar turno")){
-                vm.buscarDNIPaciente(binding.etDNIPaciente.getText().toString());
-                vm.buscarDNITutor(binding.etDNITutor.getText().toString());
-            } else {
-                vm.guardarTurno((TipoDeVacuna) binding.spnTipoDeVacuna.getSelectedItem(),binding.spnRelacionTutor.getSelectedItem().toString(), binding.etdFecha.getText().toString(), binding.btnConfirmarTurno.getText().toString());
-            }
+            vm.cargarPacienteYTutor(binding.etDNIPaciente.getText().toString(), binding.etDNITutor.getText().toString());
         });
 
         binding.btnCancelarTurno.setOnClickListener(new View.OnClickListener() {

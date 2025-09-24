@@ -17,9 +17,12 @@ import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.DialogHorariosBinding;
 import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
+import com.ezequieldiaz.vacunatorioapp4.model.HorariosResponse;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class HorariosDialog extends DialogFragment {
@@ -91,7 +94,15 @@ public class HorariosDialog extends DialogFragment {
         }
 
         binding.rvHorarios.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        HorariosAdapter adapter = new HorariosAdapter(fechaSeleccionada.getHorarios(), horario -> {
+        // Filtramos solo los pendientes
+        List<HorariosResponse> horariosValidos = new ArrayList<>();
+        for (HorariosResponse h : fechaSeleccionada.getHorarios()) {
+            if (h.isLibre()) {
+                horariosValidos.add(h);
+            }
+        }
+
+        HorariosAdapter adapter = new HorariosAdapter(horariosValidos, horario -> {
             if (horario != null) {
                 NavController navController = NavHostFragment.findNavController(HorariosDialog.this);
                 navController.getBackStackEntry(R.id.nav_turno)
@@ -108,15 +119,15 @@ public class HorariosDialog extends DialogFragment {
 
                 Toast.makeText(
                         getContext(),
-                        "Fecha seleccionada: " + fechaSeleccionada.getFecha() + " / " + horario.getHora() + " / " + darTurnoOCargarTurno,
+                        "Fecha seleccionada: " + fechaSeleccionada.getFecha() + " / " + horario.getHora(),
                         Toast.LENGTH_LONG
                 ).show();
 
                 dismiss();
-
                 navController.popBackStack(R.id.nav_turno, false);
             }
         });
+
 
 
         binding.rvHorarios.setAdapter(adapter);

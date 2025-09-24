@@ -11,6 +11,9 @@
     <color name="colorSecondaryContainer">#E8DEF8</color>
     <color name="colorOnSecondaryContainer">#1D192B</color>
     <color name="hint">#000000</color>
+    <color name="textoPrincipal">#212121</color>
+    <color name="textoSecundario">#FFFFFF</color>
+
 
     <!-- Fondos y superficie -->
     <color name="colorBackground">#FFFBFE</color>
@@ -23,9 +26,9 @@
     <color name="colorOnError">#FFFFFF</color>
 
     <!-- Extras para layouts -->
-    <color name="verdeLibre">#4CAF50</color>       <!-- Verde para horarios libres -->
-    <color name="grisOcupado">#B0BEC5</color>     <!-- Gris para horarios ocupados -->
-    <color name="moradoBoton">#6200EE</color>     <!-- Para botones, si querés -->
+    <color name="verdeLibre">#4CAF50</color>
+    <color name="grisOcupado">#B0BEC5</color>
+    <color name="moradoBoton">#6200EE</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="green">#4CAF50</color>

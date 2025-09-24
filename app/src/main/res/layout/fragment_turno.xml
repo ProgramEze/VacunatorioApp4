@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- DNI Paciente -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilDNIPaciente"
         style="@style/Widget.VacunatorioApp4.TextInputLayout"
@@ -51,9 +50,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilDNIPaciente" />
 
-
-
-    <!-- DNI Tutor -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilDNITutor"
         style="@style/Widget.VacunatorioApp4.TextInputLayout"
@@ -75,7 +71,6 @@
             android:textColorHint="@color/black"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Relación Tutor -->
     <ImageButton
         android:id="@+id/ibCargarTutor"
         android:layout_width="47dp"
@@ -99,7 +94,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilDNITutor" />
 
-    <!-- Fecha de la Turno -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilFecha"
         android:layout_width="0dp"
@@ -114,16 +108,13 @@
             android:id="@+id/etdFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Seleccionar fecha"
+            android:hint="Seleccionar fecha para dar o cargar un turno"
             android:focusable="false"
             android:inputType="none"
             android:textColor="@color/black"
             android:textColorHint="@color/black"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Contenedor para mostrar DisponibilidadFragment -->
-
-    <!-- Botones -->
     <Button
         android:id="@+id/btnLimpiar"
         android:layout_width="match_parent"
@@ -132,17 +123,7 @@
         android:text="Limpiar campos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilFecha" />
-
-    <Button
-        android:id="@+id/btnCargarTurno"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Cargar turno"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLimpiar" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
         android:id="@+id/btnConfirmarTurno"
@@ -152,7 +133,7 @@
         android:text="Otorgar turno"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCargarTurno" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLimpiar" />
 
     <Button
         android:id="@+id/btnCancelarTurno"
@@ -176,4 +157,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCancelarTurno" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Para dar de alta un turno seleccione la fecha sin ingresar ningún dato, si desea cargar un turno ingrese el DNI del paciente para buscar los turnos pendientes que tiene el paciente"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textSize="17dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilFecha"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

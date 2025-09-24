@@ -118,32 +118,19 @@ public class ApiClient {
                 @Query("fecha") String fecha
         );
 
-        @FormUrlEncoded
         @POST("turnos")
         Call<Turno> registrarTurno(
-            @Header("Authorization") String token,
-            @Field("PacienteId") int pacienteId,
-            @Field("TipoDeVacunaId") int tipoDeVacunaId,
-            @Field("TutorId") int tutorId,
-            @Field("AgenteId") String agenteId,
-            @Field("AplicacionId") int aplicacionId,
-            @Field("Cita") String cita,
-            @Field("RelacionTutor") String relacionTutor
+                @Header("Authorization") String token,
+                @Body Turno turno
         );
 
-        @FormUrlEncoded
         @PUT("turnos/{id}")
         Call<Turno> modificarTurno(
                 @Header("Authorization") String token,
                 @Path("id") int id,
-                @Field("PacienteId") int pacienteId,
-                @Field("TipoDeVacunaId") int tipoDeVacunaId,
-                @Field("TutorId") int tutorId,
-                @Field("AgenteId") String agenteId,
-                @Field("AplicacionId") int aplicacionId,
-                @Field("Cita") String cita,
-                @Field("RelacionTutor") String relacionTutor
+                @Body Turno turno
         );
+
 
         @PUT("turnos/cancelarturno/{id}")
         Call<Void> cancelarTurno(

@@ -59,14 +59,12 @@ public class FechasFragment extends Fragment {
             }
         }
 
-        // Observer
         vm.getMFechas().observe(getViewLifecycleOwner(), listaDeFechas -> {
             if (listaDeFechas == null || listaDeFechas.isEmpty()) {
                 fechasAdapter.actualizarLista(new ArrayList<>());
                 return;
             }
 
-            // Filtramos fechas que tengan al menos un horario libre
             List<FechasResponse> fechasFiltradas = new ArrayList<>();
             for (FechasResponse fecha : listaDeFechas) {
                 if (fecha.getHorarios() != null) {
@@ -81,7 +79,6 @@ public class FechasFragment extends Fragment {
                 }
             }
 
-            // Solo actualizamos la lista del adapter, no creamos nada nuevo
             fechasAdapter.actualizarLista(fechasFiltradas);
         });
 

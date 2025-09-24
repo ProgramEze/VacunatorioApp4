@@ -43,8 +43,10 @@ import retrofit2.Response;
 public class TurnoFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<Paciente> mPaciente;
     private MutableLiveData<List<TipoDeVacuna>> mListaTipo;
+    private MutableLiveData<TipoDeVacuna> mTipoDeVacuna;
     private MutableLiveData<Tutor> mTutor;
     private MutableLiveData<List<String>> mRelaciones;
+    private MutableLiveData<String> mRelacion;
     private MutableLiveData<String> mFechaYHora;
     private MutableLiveData<Turno> mTurno;
     private MutableLiveData<String> mConfirmar;
@@ -61,6 +63,8 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     public TurnoFragmentViewModel(@NonNull Application application) {
         super(application);
         spinnersCargados = false;
+        //pacienteModificado = new Paciente();
+        //tutorModificado = new Tutor();
     }
 
     public LiveData<Paciente> getMPaciente() {
@@ -75,6 +79,20 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mListaTipo = new MutableLiveData<>();
         }
         return mListaTipo;
+    }
+
+    public LiveData<TipoDeVacuna> getMTipoDeVacuna() {
+        if (mTipoDeVacuna == null) {
+            mTipoDeVacuna = new MutableLiveData<>();
+        }
+        return mTipoDeVacuna;
+    }
+
+    public LiveData<String> getMRelacion() {
+        if (mRelacion == null) {
+            mRelacion = new MutableLiveData<>();
+        }
+        return mRelacion;
     }
 
     public LiveData<Tutor> getMTutor() {
@@ -159,8 +177,16 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         mMostrarDialog.setValue(false);
     }
 
+    public void setTipoDeVacuna(TipoDeVacuna tipo) {
+        mTipoDeVacuna.setValue(tipo);
+    }
+
     public void setFechaYHora(String fecha) {
         mFechaYHora.setValue(fecha);
+    }
+
+    public void setRelacion(String relacion) {
+        mRelacion.setValue(relacion);
     }
 
     public MutableLiveData<Integer> getSelectedTipoVacunaIndex() {
@@ -295,7 +321,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         });
     }
 
-    public void buscarDNIPaciente(String dni) {
+    public Paciente buscarDNIPaciente(String dni) {
         ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
         String token = ApiClient.leerToken(getApplication());
         try {
@@ -323,6 +349,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mMensaje.setValue("Falta ingresar el DNI del paciente");
             Log.d("buscar DNI", e.getMessage());
         }
+        return mPaciente.getValue();
     }
 
     public void cargarImagen(int requestCode, int resultCode, Intent data) {
@@ -346,12 +373,10 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         }
     }
 
-    public void buscarDNITutor(String dni) {
+    public Tutor buscarDNITutor(String dni) {
         ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
-        Log.d("turno", dni);
         String token = ApiClient.leerToken(getApplication());
         try {
-            int dniParseado = Integer.parseInt(dni);
             Call<Tutor> call = apiService.getTutor(token, Integer.parseInt(dni));
             call.enqueue(new Callback<>() {
                 @Override
@@ -374,6 +399,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mMensaje.setValue("Falta ingresar el DNI del tutor");
             Log.d("buscar DNI", e.getMessage());
         }
+        return mTutor.getValue();
     }
 
     public void limpiarMutables() {
@@ -397,12 +423,17 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         if (mLimpiar != null) mLimpiar.setValue(valor);
     }
 
-    public void guardarTurno(TipoDeVacuna tDV, String rT, String fecha, String boton) {
+    public void cargarPacienteYTutor(String dniPaciente, String dniTutor){
+        if(dniPaciente.isBlank() || dniTutor.isBlank()){
+            mMensaje.setValue("Falta ingresar el DNI del paciente o del tutor");
+        } else {
+            buscarDNIPaciente(dniPaciente);
+            buscarDNITutor(dniTutor);
+        }
+    }
+
+    public void guardarTurno(String boton) {
         try {
-            if (tDV == null || rT.equalsIgnoreCase("Seleccione la relación con el tutor")) {
-                mMensaje.setValue("Seleccione el tipo de vacuna y la relación con el tutor");
-                return;
-            }
             if (mPaciente.getValue() == null || mTutor.getValue() == null) {
                 mMensaje.setValue("Error al cargar paciente o tutor, intente de nuevo");
                 return;
@@ -412,12 +443,12 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
                 mMensaje.setValue("No se encontró token de sesión");
                 return;
             }
-            if (fecha == null || fecha.isEmpty()) {
-                mMensaje.setValue("Debe seleccionar una fecha y hora");
-                return;
+            if(mTutor.getValue() == null || mPaciente.getValue() == null){
+                mMensaje.setValue("Error al encontrar el paciente o tutor, intente de nuevo");
             }
             sharedPreferences = getApplication().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
             String matricula = sharedPreferences.getString("matricula", "00000000");
+            String fecha = mFechaYHora.getValue();
             String[] partes = fecha.split(" - ");
             if (partes.length != 2) {
                 mMensaje.setValue("Formato de fecha/hora incorrecto");
@@ -431,10 +462,10 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             );
             Turno turno = new Turno();
             turno.setPacienteId(mPaciente.getValue().getId());
-            turno.setTipoDeVacunaId(tDV.getId());
+            //turno.setTipoDeVacunaId(tDV.getId());
             turno.setTutorId(mTutor.getValue().getId());
             turno.setAgenteId(matricula);
-            turno.setRelacionTutor(rT);
+            //turno.setRelacionTutor(rT);
             turno.setCita(cita.toString());
             ApiClient.MisEndPoints api = ApiClient.getEndPoints();
             if (token != null) {
@@ -446,7 +477,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
                     turno.setPacienteId(mPaciente.getValue().getId());
                     turno.setTutorId(mTutor.getValue().getId());
                     Log.d("turno", turno.toString());
-                    Call<Turno> call = api.registrarTurno(token, turno.getPacienteId(), turno.getTipoDeVacunaId(), turno.getTutorId(), turno.getAgenteId(), 0, turno.getCita(), turno.getRelacionTutor());
+                    /*Call<Turno> call = api.registrarTurno(token, turno.getPacienteId(), turno.getTipoDeVacunaId(), turno.getTutorId(), turno.getAgenteId(), 0, turno.getCita(), turno.getRelacionTutor());
                     call.enqueue(new Callback<>() {
                         @Override
                         public void onResponse(Call<Turno> call, Response<Turno> response) {
@@ -474,28 +505,29 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
                             Log.e("salida", "Falla de conexión/petición: " + throwable.getMessage(), throwable);
                             mMensaje.setValue("Error de red: " + throwable.getMessage());
                         }
-                    });
+                    });*/
                 } else {
-                    Log.d("turno", "Turno modificado");
+                    //Log.d("turno", "Turno modificado");
                     Turno turnoViejo = mTurno.getValue();
-                    Log.d("turno cargado", turnoViejo.toString());
+                    Log.d("turno cargado", turno.toString());
+                    //Log.d("turno cargado", turnoViejo.toString());
                     turnoViejo.setId(mTurno.getValue().getId());
                     turnoViejo.setPacienteId(mPaciente.getValue().getId());
                     turnoViejo.setTipoDeVacunaId(turno.getTipoDeVacunaId());
                     turnoViejo.setTutorId(mTutor.getValue().getId());
+                    turnoViejo.setRelacionTutor(turno.getRelacionTutor());
                     turnoViejo.setAgenteId(matricula);
                     turnoViejo.setCita(turno.getCita());
-                    Log.d("turno", "Turno cambiado: " + turno);
-                    Log.d("turno", "Turno viejo cambiado: " + turnoViejo);
-                    Call<Turno> call = api.modificarTurno(token, turnoViejo.getId(), turnoViejo.getPacienteId(), turnoViejo.getTipoDeVacunaId(), turnoViejo.getTutorId(), matricula, turnoViejo.getAplicacionId(), turnoViejo.getCita(), turnoViejo.getRelacionTutor());
+                    Log.d("turno cargado", turnoViejo.toString());
+                    /*Call<Turno> call = api.modificarTurno(token, turnoViejo.getId(), turnoViejo.getPacienteId(), turnoViejo.getTipoDeVacunaId(), turnoViejo.getTutorId(), matricula, turnoViejo.getAplicacionId(), turnoViejo.getCita(), turnoViejo.getRelacionTutor());
                     call.enqueue(new Callback<>() {
                         @Override
                         public void onResponse(Call<Turno> call, Response<Turno> response) {
                             if (response.isSuccessful()) {
                                 Log.d("salida", response.isSuccessful() + "");
-                                mLimpiar.setValue(true);
+                                limpiarMutables();
                                 mConfirmar.setValue("Otorgar turno");
-                                Toast.makeText(getApplication(), "Turno modificado con exito", Toast.LENGTH_LONG).show();
+                                mMensaje.setValue("Turno modificado con exito");
                             } else {
                                 String detailedErrorMessage = response.message();
                                 if (response.errorBody() != null) {
@@ -514,7 +546,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
                         public void onFailure(Call<Turno> call, Throwable throwable) {
                             Log.d("salida", "Falla: " + throwable.getMessage());
                         }
-                    });
+                    });*/
                 }
             }
         } catch (DateTimeParseException e) {
