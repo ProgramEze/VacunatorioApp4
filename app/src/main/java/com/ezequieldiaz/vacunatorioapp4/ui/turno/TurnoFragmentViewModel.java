@@ -44,8 +44,8 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> mLimpiar;
     private MutableLiveData<String> mMensaje;
     private MutableLiveData<Boolean> mCancelarYConfirmar;
+    private MutableLiveData<Boolean> mOcultarET;
     private MutableLiveData<Boolean> mTurnoCargado;
-    private SharedPreferences sharedPreferences;
     private MutableLiveData<FechaSeleccionada> mFechaSeleccionada;
     private MutableLiveData<Boolean> mMostrarDialog;
     private MutableLiveData<Integer> selectedTipoVacunaIndex;
@@ -138,6 +138,13 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         return mMostrarDialog;
     }
 
+    public LiveData<Boolean> getMOcultarET() {
+        if (mOcultarET == null) {
+            mOcultarET = new MutableLiveData<>();
+        }
+        return mOcultarET;
+    }
+
     public void solicitarSeleccionFecha(@NonNull String dni) {
         if (!dni.isBlank()) {
             buscarDNIPaciente(dni);
@@ -185,6 +192,10 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
 
     public void setSelectedRelacionIndex(int index) {
         selectedRelacionIndex.setValue(index);
+    }
+
+    public void setMOcultarET(boolean ocultar) {
+        mOcultarET.setValue(ocultar);
     }
 
     public void cargarSpinners() {
@@ -251,7 +262,6 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             @Override
             public void onResponse(Call<Turno> call, Response<Turno> response) {
                 Log.d("turno", "Código HTTP: " + response.code());
-
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         mConfirmar.setValue("Modificar turno");

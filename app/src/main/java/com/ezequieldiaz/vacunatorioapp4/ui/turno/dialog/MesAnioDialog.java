@@ -1,4 +1,4 @@
-package com.ezequieldiaz.vacunatorioapp4.ui.turno;
+package com.ezequieldiaz.vacunatorioapp4.ui.turno.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;

@@ -19,7 +19,6 @@ public class Turno implements Serializable {
     private TipoDeVacuna tipoDeVacuna;
     private Tutor tutor;
     private Agente agente;
-    private Aplicacion aplicacion;
 
     public Turno() {}
 
@@ -138,14 +137,6 @@ public class Turno implements Serializable {
 
     public void setAgente(Agente agente) {
         this.agente = agente;
-    }
-
-    public Aplicacion getAplicacion() {
-        return aplicacion;
-    }
-
-    public void setAplicacion(Aplicacion aplicacion) {
-        this.aplicacion = aplicacion;
     }
 
     @NonNull

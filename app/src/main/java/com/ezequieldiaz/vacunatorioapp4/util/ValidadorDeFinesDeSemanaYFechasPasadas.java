@@ -8,18 +8,18 @@ import com.google.android.material.datepicker.CalendarConstraints;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-public class WeekdayAndFutureDateValidator implements CalendarConstraints.DateValidator {
+public class ValidadorDeFinesDeSemanaYFechasPasadas implements CalendarConstraints.DateValidator {
 
-    public static final Creator<WeekdayAndFutureDateValidator> CREATOR =
-            new Creator<WeekdayAndFutureDateValidator>() {
+    public static final Creator<ValidadorDeFinesDeSemanaYFechasPasadas> CREATOR =
+            new Creator<ValidadorDeFinesDeSemanaYFechasPasadas>() {
                 @Override
-                public WeekdayAndFutureDateValidator createFromParcel(Parcel in) {
-                    return new WeekdayAndFutureDateValidator();
+                public ValidadorDeFinesDeSemanaYFechasPasadas createFromParcel(Parcel in) {
+                    return new ValidadorDeFinesDeSemanaYFechasPasadas();
                 }
 
                 @Override
-                public WeekdayAndFutureDateValidator[] newArray(int size) {
-                    return new WeekdayAndFutureDateValidator[size];
+                public ValidadorDeFinesDeSemanaYFechasPasadas[] newArray(int size) {
+                    return new ValidadorDeFinesDeSemanaYFechasPasadas[size];
                 }
             };
 

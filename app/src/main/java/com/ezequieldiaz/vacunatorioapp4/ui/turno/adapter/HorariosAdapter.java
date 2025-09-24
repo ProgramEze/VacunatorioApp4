@@ -1,4 +1,4 @@
-package com.ezequieldiaz.vacunatorioapp4.ui.turno;
+package com.ezequieldiaz.vacunatorioapp4.ui.turno.adapter;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;

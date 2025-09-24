@@ -110,7 +110,8 @@ public class AgregarPacienteFragmentViewModel extends AndroidViewModel {
                         if (errorCode == 400) {
                             mMensaje.setValue(errorBody);
                         } else {
-                            mMensaje.setValue("Error al guardar el tutor: " + errorCode + " - " + response.message());
+                            mMensaje.setValue("Error al guardar el paciente: " + errorCode + " - " + response.message());
+                            Log.d("Salida", response.message());
                         }
                     } catch (Exception e) {
                         Log.e("API_ERROR", "Error al leer el cuerpo del error", e);

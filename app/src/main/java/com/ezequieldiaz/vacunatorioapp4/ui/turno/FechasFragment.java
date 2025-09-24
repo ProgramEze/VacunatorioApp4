@@ -16,6 +16,9 @@ import com.ezequieldiaz.vacunatorioapp4.databinding.FragmentFechasBinding;
 import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
 import com.ezequieldiaz.vacunatorioapp4.model.HorariosResponse;
+import com.ezequieldiaz.vacunatorioapp4.ui.turno.adapter.FechasAdapter;
+import com.ezequieldiaz.vacunatorioapp4.ui.turno.dialog.HorariosDialog;
+import com.ezequieldiaz.vacunatorioapp4.util.SpaceItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;

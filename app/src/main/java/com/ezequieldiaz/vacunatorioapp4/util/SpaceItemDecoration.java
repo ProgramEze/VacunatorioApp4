@@ -1,4 +1,4 @@
-package com.ezequieldiaz.vacunatorioapp4.ui.turno;
+package com.ezequieldiaz.vacunatorioapp4.util;
 
 import android.graphics.Rect;
 import android.view.View;

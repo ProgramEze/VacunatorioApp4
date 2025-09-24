@@ -1,4 +1,4 @@
-package com.ezequieldiaz.vacunatorioapp4.ui.turno;
+package com.ezequieldiaz.vacunatorioapp4.ui.turno.dialog;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.ezequieldiaz.vacunatorioapp4.R;
 import com.ezequieldiaz.vacunatorioapp4.databinding.DialogHorariosBinding;
-import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
 import com.ezequieldiaz.vacunatorioapp4.model.HorariosResponse;
+import com.ezequieldiaz.vacunatorioapp4.ui.turno.adapter.HorariosAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

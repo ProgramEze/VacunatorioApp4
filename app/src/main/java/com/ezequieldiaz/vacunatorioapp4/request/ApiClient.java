@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ezequieldiaz.vacunatorioapp4.model.Agente;
-import com.ezequieldiaz.vacunatorioapp4.model.Aplicacion;
 import com.ezequieldiaz.vacunatorioapp4.model.FechasResponse;
-import com.ezequieldiaz.vacunatorioapp4.model.Laboratorio;
 import com.ezequieldiaz.vacunatorioapp4.model.Paciente;
 import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
 import com.ezequieldiaz.vacunatorioapp4.model.Turno;
@@ -44,12 +42,16 @@ public class ApiClient {
     }
 
     public interface MisEndPoints {
+        @GET("Agentes")
+        Call<Agente> miPerfil(@Header("Authorization") String token);
+
         @FormUrlEncoded
         @POST("Agentes/login")
         Call<String> login(@Field("Matricula") String u, @Field("Clave") String c);
 
-        @GET("Agentes")
-        Call<Agente> miPerfil(@Header("Authorization") String token);
+        @FormUrlEncoded
+        @POST("Agentes/olvidecontraseña")
+        Call<Void> enviarEmail(@Field("matricula") String matricula);
 
         @PUT("Agentes")
         Call<String> modificarUsuario(@Header("Authorization") String token, @Body Agente agente);
@@ -57,13 +59,6 @@ public class ApiClient {
         @FormUrlEncoded
         @PUT("Agentes/cambiarviejacontraseña")
         Call<Void> cambiarPassword(@Header("Authorization") String token, @Field("ClaveVieja") String claveVieja, @Field("ClaveNueva") String claveNueva, @Field("RepetirClaveNueva") String repetirClaveNueva);
-
-        @FormUrlEncoded
-        @POST("Agentes/olvidecontraseña")
-        Call<Void> enviarEmail(@Field("matricula") String matricula);
-
-        @PUT("Aplicaciones/{id}")
-        Call<Void> confirmarAplicacion(@Header("Authorization") String token, @Path("id") int id);
 
         @GET("Tutores/{dni}")
         Call<Tutor> getTutor(@Header("Authorization") String token, @Path("dni") int dni);
@@ -93,37 +88,29 @@ public class ApiClient {
             @Field("genero") String genero
         );
 
-        @GET("turnos/porfecha")
+        @GET("Turnos/porfecha")
         Call<Turno> obtenerTurnoPorFecha(
                 @Header("Authorization") String token,
                 @Query("fecha") String fecha
         );
 
-        @POST("turnos")
+        @POST("Turnos")
         Call<Turno> registrarTurno(
                 @Header("Authorization") String token,
                 @Body Turno turno
         );
 
-        @PUT("turnos/{id}")
+        @PUT("Turnos/{id}")
         Call<Turno> modificarTurno(
                 @Header("Authorization") String token,
                 @Path("id") int id,
                 @Body Turno turno
         );
 
-
-        @PUT("turnos/cancelarturno/{id}")
+        @PUT("Turnos/cancelarturno/{id}")
         Call<Void> cancelarTurno(
                 @Header("Authorization") String token,
                 @Path("id") int id
-        );
-
-        @GET("Turnos/disponibilidad/{anio}/{mes}")
-        Call<List<FechasResponse>> getDisponibilidadMes(
-                @Header("Authorization") String token,
-                @Path("anio") int anio,
-                @Path("mes") int mes
         );
 
         @GET("Turnos/por-paciente")
@@ -134,12 +121,18 @@ public class ApiClient {
                 @Query("mes") int mes
         );
 
+        @GET("Turnos/disponibilidad/{anio}/{mes}")
+        Call<List<FechasResponse>> getDisponibilidadMes(
+                @Header("Authorization") String token,
+                @Path("anio") int anio,
+                @Path("mes") int mes
+        );
+
+        @PUT("Turnos/aplicar/{id}")
+        Call<Void> confirmarAplicacion(@Header("Authorization") String token, @Path("id") int id);
+
         @GET("TipoDeVacunas")
         Call<List<TipoDeVacuna>> getTiposDeVacunas(@Header("Authorization") String token);
-
-        @GET("tiposdevacunas/{id}")
-        Call<TipoDeVacuna> getTipoDeVacuna(@Header("Authorization") String token, @Path("id") int id);
-
     }
 
     public static void guardarToken(String token, Context context) {

@@ -28,6 +28,7 @@ import com.ezequieldiaz.vacunatorioapp4.model.FechaSeleccionada;
 import com.ezequieldiaz.vacunatorioapp4.model.TipoDeVacuna;
 import com.ezequieldiaz.vacunatorioapp4.model.Turno;
 import com.ezequieldiaz.vacunatorioapp4.ui.registro.EscanerActivity;
+import com.ezequieldiaz.vacunatorioapp4.ui.turno.dialog.MesAnioDialog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,9 +65,11 @@ public class TurnoFragment extends Fragment {
                     String fechaFormateada = argFormat.format(date);
                     if (otorgarOCargar.equalsIgnoreCase("Dar turno")) {
                         vm.setFechaYHora(fechaFormateada + " - " + hora);
+                        vm.setMOcultarET(true);
                     } else {
                         String citaIso = fechaIso + "T" + hora + ":00";
                         vm.cargarTurno(citaIso);
+                        vm.setMOcultarET(false);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -249,6 +252,14 @@ public class TurnoFragment extends Fragment {
                 });
                 dialog.show(getParentFragmentManager(), "MesAnioDialog");
             }
+        });
+
+        vm.getMOcultarET().observe(getViewLifecycleOwner(), ocultar -> {
+            Log.d("ocultar", "ocultar elementos");
+            binding.etDNIPaciente.setEnabled(ocultar);
+            binding.etDNITutor.setEnabled(ocultar);
+            binding.spnTipoDeVacuna.setEnabled(ocultar);
+            binding.spnRelacionTutor.setEnabled(ocultar);
         });
 
         binding.ibCargarPaciente.setOnClickListener(new View.OnClickListener() {
