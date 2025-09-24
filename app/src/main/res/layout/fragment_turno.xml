@@ -162,7 +162,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Para dar de alta un turno seleccione la fecha sin ingresar ningún dato, si desea cargar un turno ingrese el DNI del paciente para buscar los turnos pendientes que tiene el paciente"
+        android:text="Para dar de alta un turno seleccione la fecha sin ingresar ningún dato, si desea cargar un turno ingrese el DNI del paciente primero y luego seleccione la fecha para buscar los turnos pendientes que tiene el paciente"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:textSize="17dp"

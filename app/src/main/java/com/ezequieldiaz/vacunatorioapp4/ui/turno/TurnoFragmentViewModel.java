@@ -4,11 +4,9 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -29,11 +27,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalTime;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
 import retrofit2.Call;
@@ -43,28 +36,22 @@ import retrofit2.Response;
 public class TurnoFragmentViewModel extends AndroidViewModel {
     private MutableLiveData<Paciente> mPaciente;
     private MutableLiveData<List<TipoDeVacuna>> mListaTipo;
-    private MutableLiveData<TipoDeVacuna> mTipoDeVacuna;
     private MutableLiveData<Tutor> mTutor;
     private MutableLiveData<List<String>> mRelaciones;
-    private MutableLiveData<String> mRelacion;
     private MutableLiveData<String> mFechaYHora;
     private MutableLiveData<Turno> mTurno;
     private MutableLiveData<String> mConfirmar;
     private MutableLiveData<Boolean> mLimpiar;
     private MutableLiveData<String> mMensaje;
     private MutableLiveData<Boolean> mCancelarYConfirmar;
+    private MutableLiveData<Boolean> mTurnoCargado;
     private SharedPreferences sharedPreferences;
     private MutableLiveData<FechaSeleccionada> mFechaSeleccionada;
     private MutableLiveData<Boolean> mMostrarDialog;
     private MutableLiveData<Integer> selectedTipoVacunaIndex;
     private MutableLiveData<Integer> selectedRelacionIndex;
-    private boolean spinnersCargados;
-
     public TurnoFragmentViewModel(@NonNull Application application) {
         super(application);
-        spinnersCargados = false;
-        //pacienteModificado = new Paciente();
-        //tutorModificado = new Tutor();
     }
 
     public LiveData<Paciente> getMPaciente() {
@@ -79,20 +66,6 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             mListaTipo = new MutableLiveData<>();
         }
         return mListaTipo;
-    }
-
-    public LiveData<TipoDeVacuna> getMTipoDeVacuna() {
-        if (mTipoDeVacuna == null) {
-            mTipoDeVacuna = new MutableLiveData<>();
-        }
-        return mTipoDeVacuna;
-    }
-
-    public LiveData<String> getMRelacion() {
-        if (mRelacion == null) {
-            mRelacion = new MutableLiveData<>();
-        }
-        return mRelacion;
     }
 
     public LiveData<Tutor> getMTutor() {
@@ -166,7 +139,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
     }
 
     public void solicitarSeleccionFecha(@NonNull String dni) {
-        if(!dni.isBlank()){
+        if (!dni.isBlank()) {
             buscarDNIPaciente(dni);
         }
         mMostrarDialog.setValue(true);
@@ -177,16 +150,19 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         mMostrarDialog.setValue(false);
     }
 
-    public void setTipoDeVacuna(TipoDeVacuna tipo) {
-        mTipoDeVacuna.setValue(tipo);
-    }
-
     public void setFechaYHora(String fecha) {
         mFechaYHora.setValue(fecha);
     }
 
-    public void setRelacion(String relacion) {
-        mRelacion.setValue(relacion);
+    public MutableLiveData<Boolean> getMTurnoCargado() {
+        if (mTurnoCargado == null) {
+            mTurnoCargado = new MutableLiveData<>();
+        }
+        return mTurnoCargado;
+    }
+
+    public void setTurnoCargado(boolean cargado) {
+        mTurnoCargado.setValue(cargado);
     }
 
     public MutableLiveData<Integer> getSelectedTipoVacunaIndex() {
@@ -321,7 +297,7 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         });
     }
 
-    public Paciente buscarDNIPaciente(String dni) {
+    public void buscarDNIPaciente(String dni) {
         ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
         String token = ApiClient.leerToken(getApplication());
         try {
@@ -330,26 +306,57 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
             call.enqueue(new Callback<>() {
                 @Override
                 public void onResponse(Call<Paciente> call, Response<Paciente> response) {
-                    if (response.isSuccessful()) {
+                    if (response.isSuccessful() && response.body() != null) {
                         mPaciente.postValue(response.body());
-                        Log.d("turno", "Paciente: " + response.body().getDni());
+                        Log.d("turno", "Paciente encontrado: " + response.body().getDni());
                     } else {
-                        mMensaje.postValue("Error al obtener el paciente");
                         mPaciente.postValue(null);
-                        Log.e("TurnoFragmentViewModel", "Error al obtener un paciente: " + response.message());
+                        mMensaje.postValue("No se encontró paciente con ese DNI");
+                        Log.e("TurnoFragmentViewModel", "Paciente no encontrado: " + response.message());
                     }
                 }
 
                 @Override
-                public void onFailure(Call<Paciente> call, Throwable throwable) {
-                    mPaciente.setValue(null);
+                public void onFailure(Call<Paciente> call, Throwable t) {
+                    mPaciente.postValue(null);
+                    mMensaje.postValue("Error al buscar paciente: " + t.getMessage());
                 }
             });
         } catch (NumberFormatException e) {
-            mMensaje.setValue("Falta ingresar el DNI del paciente");
+            mMensaje.setValue("DNI inválido");
             Log.d("buscar DNI", e.getMessage());
         }
-        return mPaciente.getValue();
+    }
+
+    public void buscarDNITutor(String dni) {
+        ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
+        String token = ApiClient.leerToken(getApplication());
+        try {
+            int dniParseado = Integer.parseInt(dni);
+            Call<Tutor> call = apiService.getTutor(token, dniParseado);
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(Call<Tutor> call, Response<Tutor> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        mTutor.postValue(response.body());
+                        Log.d("turno", "Tutor encontrado: " + response.body().getDni());
+                    } else {
+                        mTutor.postValue(null);
+                        mMensaje.postValue("No se encontró tutor con ese DNI");
+                        Log.e("TurnoFragmentViewModel", "Tutor no encontrado: " + response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Tutor> call, Throwable t) {
+                    mTutor.postValue(null);
+                    mMensaje.postValue("Error al buscar tutor: " + t.getMessage());
+                }
+            });
+        } catch (NumberFormatException e) {
+            mMensaje.setValue("DNI inválido");
+            Log.d("buscar DNI", e.getMessage());
+        }
     }
 
     public void cargarImagen(int requestCode, int resultCode, Intent data) {
@@ -373,35 +380,6 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         }
     }
 
-    public Tutor buscarDNITutor(String dni) {
-        ApiClient.MisEndPoints apiService = ApiClient.getEndPoints();
-        String token = ApiClient.leerToken(getApplication());
-        try {
-            Call<Tutor> call = apiService.getTutor(token, Integer.parseInt(dni));
-            call.enqueue(new Callback<>() {
-                @Override
-                public void onResponse(Call<Tutor> call, Response<Tutor> response) {
-                    if (response.isSuccessful()) {
-                        Log.d("turno", "Tutor: " + response.body().getNombre());
-                        mTutor.postValue(response.body());
-                    } else {
-                        mTutor.postValue(null);
-                        Log.e("TurnoFragmentViewModel", "Error al obtener el tutor: " + response.message());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Tutor> call, Throwable throwable) {
-
-                }
-            });
-        } catch (NumberFormatException e) {
-            mMensaje.setValue("Falta ingresar el DNI del tutor");
-            Log.d("buscar DNI", e.getMessage());
-        }
-        return mTutor.getValue();
-    }
-
     public void limpiarMutables() {
         if (mPaciente != null) mPaciente.setValue(null);
         if (mTutor != null) mTutor.setValue(null);
@@ -423,142 +401,75 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
         if (mLimpiar != null) mLimpiar.setValue(valor);
     }
 
-    public void cargarPacienteYTutor(String dniPaciente, String dniTutor){
-        if(dniPaciente.isBlank() || dniTutor.isBlank()){
-            mMensaje.setValue("Falta ingresar el DNI del paciente o del tutor");
+    public void guardarTurno(Turno turno) {
+        String token = ApiClient.leerToken(getApplication());
+        if (token != null) {
+            ApiClient.MisEndPoints api = ApiClient.getEndPoints();
+
+            Call<Turno> call = api.registrarTurno(token, turno);
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(Call<Turno> call, Response<Turno> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        mTurno.postValue(response.body());
+                        mMensaje.postValue("Turno registrado con éxito");
+                        mLimpiar.setValue(true);
+                    } else {
+                        try {
+                            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Desconocido";
+                            mMensaje.postValue("Error al registrar turno: " + response.code() + " - " + errorBody);
+                            Log.e("TurnoVM", "Error 400/415: " + errorBody);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            mMensaje.postValue("Error al registrar turno: " + response.code());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Turno> call, Throwable t) {
+                    mMensaje.postValue("Falla en el alta: " + t.getMessage());
+                    Log.e("TurnoVM", "Falla en guardarTurno", t);
+                }
+            });
         } else {
-            buscarDNIPaciente(dniPaciente);
-            buscarDNITutor(dniTutor);
+            mMensaje.postValue("Token inválido o no disponible");
         }
     }
 
-    public void guardarTurno(String boton) {
-        try {
-            if (mPaciente.getValue() == null || mTutor.getValue() == null) {
-                mMensaje.setValue("Error al cargar paciente o tutor, intente de nuevo");
-                return;
-            }
-            String token = ApiClient.leerToken(getApplication());
-            if (token == null) {
-                mMensaje.setValue("No se encontró token de sesión");
-                return;
-            }
-            if(mTutor.getValue() == null || mPaciente.getValue() == null){
-                mMensaje.setValue("Error al encontrar el paciente o tutor, intente de nuevo");
-            }
-            sharedPreferences = getApplication().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-            String matricula = sharedPreferences.getString("matricula", "00000000");
-            String fecha = mFechaYHora.getValue();
-            String[] partes = fecha.split(" - ");
-            if (partes.length != 2) {
-                mMensaje.setValue("Formato de fecha/hora incorrecto");
-                return;
-            }
-            String fechaStr = partes[0].trim();
-            String horaStr = partes[1].trim();
-            LocalDateTime cita = LocalDateTime.of(
-                    LocalDate.parse(fechaStr, DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())),
-                    LocalTime.parse(horaStr, DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault()))
-            );
-            Turno turno = new Turno();
-            turno.setPacienteId(mPaciente.getValue().getId());
-            //turno.setTipoDeVacunaId(tDV.getId());
-            turno.setTutorId(mTutor.getValue().getId());
-            turno.setAgenteId(matricula);
-            //turno.setRelacionTutor(rT);
-            turno.setCita(cita.toString());
+    public void modificarTurno(Turno turno) {
+        String token = ApiClient.leerToken(getApplication());
+        if (token != null) {
             ApiClient.MisEndPoints api = ApiClient.getEndPoints();
-            if (token != null) {
-                Log.d("turno", boton.equals("Otorgar turno") + "");
-                if (boton.equals("Otorgar turno")) {
-                    Log.d("turno", mTutor.getValue().getDni());
-                    Log.d("turno", mPaciente.getValue().getDni());
-                    Log.d("otorga", "Turno otorgado");
-                    turno.setPacienteId(mPaciente.getValue().getId());
-                    turno.setTutorId(mTutor.getValue().getId());
-                    Log.d("turno", turno.toString());
-                    /*Call<Turno> call = api.registrarTurno(token, turno.getPacienteId(), turno.getTipoDeVacunaId(), turno.getTutorId(), turno.getAgenteId(), 0, turno.getCita(), turno.getRelacionTutor());
-                    call.enqueue(new Callback<>() {
-                        @Override
-                        public void onResponse(Call<Turno> call, Response<Turno> response) {
-                            if (response.isSuccessful()) {
-                                Log.d("salida", "Éxito: " + response.code() + " - " + response.message());
-                                Toast.makeText(getApplication(), "Turno dado de alta con éxito", Toast.LENGTH_LONG).show();
-                                limpiarMutables();
-                            } else {
-                                String detailedErrorMessage = response.message();
-                                if (response.errorBody() != null) {
-                                    try {
-                                        detailedErrorMessage = response.errorBody().string();
-                                    } catch (IOException e) {
-                                        mMensaje.setValue(detailedErrorMessage);
-                                        Log.e("salida", "Error al leer errorBody", e);
-                                    }
-                                }
-                                mMensaje.setValue(detailedErrorMessage);
-                                Log.d("salida", "Falla: " + response.code() + " - " + detailedErrorMessage);
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Call<Turno> call, Throwable throwable) {
-                            Log.e("salida", "Falla de conexión/petición: " + throwable.getMessage(), throwable);
-                            mMensaje.setValue("Error de red: " + throwable.getMessage());
+            Call<Turno> call = api.modificarTurno(token, turno.getId(), turno);
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(Call<Turno> call, Response<Turno> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        mTurno.postValue(response.body());
+                        mMensaje.postValue("Turno modificado con éxito");
+                        mLimpiar.setValue(true);
+                    } else {
+                        try {
+                            String errorBody = response.errorBody() != null ? response.errorBody().string() : "Desconocido";
+                            mMensaje.postValue("Error al modificar turno: " + response.code() + " - " + errorBody);
+                            Log.e("TurnoVM", "Error 400/415 al modificar: " + errorBody);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            mMensaje.postValue("Error al modificar turno: " + response.code());
                         }
-                    });*/
-                } else {
-                    //Log.d("turno", "Turno modificado");
-                    Turno turnoViejo = mTurno.getValue();
-                    Log.d("turno cargado", turno.toString());
-                    //Log.d("turno cargado", turnoViejo.toString());
-                    turnoViejo.setId(mTurno.getValue().getId());
-                    turnoViejo.setPacienteId(mPaciente.getValue().getId());
-                    turnoViejo.setTipoDeVacunaId(turno.getTipoDeVacunaId());
-                    turnoViejo.setTutorId(mTutor.getValue().getId());
-                    turnoViejo.setRelacionTutor(turno.getRelacionTutor());
-                    turnoViejo.setAgenteId(matricula);
-                    turnoViejo.setCita(turno.getCita());
-                    Log.d("turno cargado", turnoViejo.toString());
-                    /*Call<Turno> call = api.modificarTurno(token, turnoViejo.getId(), turnoViejo.getPacienteId(), turnoViejo.getTipoDeVacunaId(), turnoViejo.getTutorId(), matricula, turnoViejo.getAplicacionId(), turnoViejo.getCita(), turnoViejo.getRelacionTutor());
-                    call.enqueue(new Callback<>() {
-                        @Override
-                        public void onResponse(Call<Turno> call, Response<Turno> response) {
-                            if (response.isSuccessful()) {
-                                Log.d("salida", response.isSuccessful() + "");
-                                limpiarMutables();
-                                mConfirmar.setValue("Otorgar turno");
-                                mMensaje.setValue("Turno modificado con exito");
-                            } else {
-                                String detailedErrorMessage = response.message();
-                                if (response.errorBody() != null) {
-                                    try {
-                                        detailedErrorMessage = response.errorBody().string();
-                                    } catch (IOException e) {
-                                        Log.e("salida", "Error al leer errorBody", e);
-                                    }
-                                }
-                                mMensaje.setValue(detailedErrorMessage);
-                                Log.d("salida", "Falla: " + response.code() + " - " + detailedErrorMessage);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Turno> call, Throwable throwable) {
-                            Log.d("salida", "Falla: " + throwable.getMessage());
-                        }
-                    });*/
+                    }
                 }
-            }
-        } catch (DateTimeParseException e) {
-            Log.d("fecha", e.getMessage());
-            mMensaje.setValue("Seleccione la fecha de la cita");
-        } catch (NumberFormatException e) {
-            mMensaje.setValue("Los campos DNI de paciente y tutor son obligatorios");
-        } catch (NullPointerException e) {
-            mMensaje.setValue("Los campos DNI de paciente y tutor son obligatorios");
-        } catch (Exception e) {
-            e.printStackTrace();
-            mMensaje.setValue("Ocurrió un error inesperado");
+
+                @Override
+                public void onFailure(Call<Turno> call, Throwable t) {
+                    mMensaje.postValue("Falla en la modificación: " + t.getMessage());
+                    Log.e("TurnoVM", "Falla en modificarTurno", t);
+                }
+            });
+        } else {
+            mMensaje.postValue("Token inválido o no disponible");
         }
     }
 
@@ -600,34 +511,6 @@ public class TurnoFragmentViewModel extends AndroidViewModel {
                     if (response.isSuccessful()) {
                         mMensaje.setValue("Vacuna aplicada correctamente");
                         mCancelarYConfirmar.setValue(false); // Ocultar el botón
-                        Log.d("confirmar", "Vacuna aplicada correctamente");
-                        mLimpiar.setValue(true);
-                    } else {
-                        mMensaje.setValue(response.toString());
-                        Log.d("confirmar", response.body().toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable throwable) {
-                    mMensaje.setValue("Error: " + throwable.getMessage());
-                    Log.d("confirmar", "Falla: " + throwable.getMessage());
-                }
-            });
-        }
-    }
-
-    public void cargarHorariosLibres(String fechaSeleccionada) {
-        String token = ApiClient.leerToken(getApplication());
-        ApiClient.MisEndPoints api = ApiClient.getEndPoints();
-        if (token != null) {
-            Call<Void> call = api.confirmarAplicacion(token, mTurno.getValue().getAplicacionId());
-            call.enqueue(new Callback<>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        mMensaje.setValue("Vacuna aplicada correctamente");
-                        mCancelarYConfirmar.setValue(false);
                         Log.d("confirmar", "Vacuna aplicada correctamente");
                         mLimpiar.setValue(true);
                     } else {

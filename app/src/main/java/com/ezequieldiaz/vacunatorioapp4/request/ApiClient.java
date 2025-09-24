@@ -62,33 +62,14 @@ public class ApiClient {
         @POST("Agentes/olvidecontraseña")
         Call<Void> enviarEmail(@Field("matricula") String matricula);
 
-        //Endpoints de Laboratorio
-        @GET("Laboratorios")
-        Call<List<Laboratorio>> getLaboratorios(@Header("Authorization") String token);
-
-        @GET("Laboratorios/{id}")
-        Call<Laboratorio> getLaboratorio(@Header("Authorization") String token, @Path("id") int id);
-
-        //Endpoints de Aplicación
-        @GET("Aplicaciones")
-        Call<List<Aplicacion>> getAplicaciones(@Header("Authorization") String token);
-
         @PUT("Aplicaciones/{id}")
         Call<Void> confirmarAplicacion(@Header("Authorization") String token, @Path("id") int id);
 
-        @FormUrlEncoded
-        @PUT("Aplicaciones/{id}")
-        Call<Void> modificarAplicacion(@Header("Authorization") String token, @Path("id") int id);
-
-        //Endpoints de Tutores
-        @GET("Tutores")
-        Call<List<Tutor>> getTutores(@Header("Authorization") String token);
-
         @GET("Tutores/{dni}")
-        Call<Tutor> getTutor(@Header("Authorization") String token, @Path("dni") int id);
+        Call<Tutor> getTutor(@Header("Authorization") String token, @Path("dni") int dni);
 
         @GET("Pacientes/{dni}")
-        Call<Paciente> getPaciente(@Header("Authorization") String token, @Path("dni") int id);
+        Call<Paciente> getPaciente(@Header("Authorization") String token, @Path("dni") int dni);
 
         @FormUrlEncoded
         @POST("tutores")

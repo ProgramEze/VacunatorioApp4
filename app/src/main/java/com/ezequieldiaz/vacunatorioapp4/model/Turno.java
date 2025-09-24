@@ -11,7 +11,7 @@ public class Turno implements Serializable {
     private int pacienteId;
     private int tipoDeVacunaId;
     private int tutorId;
-    private String agenteId;
+    private int agenteId;
     private int aplicacionId;
     private String cita;
     private String relacionTutor;
@@ -23,7 +23,7 @@ public class Turno implements Serializable {
 
     public Turno() {}
 
-    public Turno(int id, int pacienteId, int tipoDeVacunaId, int tutorId, String agenteId, int aplicacionId, String cita, String relacionTutor) {
+    public Turno(int id, int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, String cita, String relacionTutor) {
         this.id = id;
         this.pacienteId = pacienteId;
         this.tipoDeVacunaId = tipoDeVacunaId;
@@ -34,7 +34,7 @@ public class Turno implements Serializable {
         this.relacionTutor = relacionTutor;
     }
 
-    public Turno(int pacienteId, int tipoDeVacunaId, int tutorId, String agenteId, int aplicacionId, String cita, String relacionTutor) {
+    public Turno(int pacienteId, int tipoDeVacunaId, int tutorId, int agenteId, int aplicacionId, String cita, String relacionTutor) {
         this.pacienteId = pacienteId;
         this.tipoDeVacunaId = tipoDeVacunaId;
         this.tutorId = tutorId;
@@ -76,11 +76,11 @@ public class Turno implements Serializable {
         this.tutorId = tutorId;
     }
 
-    public String getAgenteId() {
+    public int getAgenteId() {
         return agenteId;
     }
 
-    public void setAgenteId(String agenteId) {
+    public void setAgenteId(int agenteId) {
         this.agenteId = agenteId;
     }
 
